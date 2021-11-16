@@ -1,0 +1,18 @@
+{
+    "name": "barryosull/testing-pain",
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Barryosull\\TestingPain\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Barry O'Sullivan",
+            "email": "barry@tercet.io"
+        }
+    ]
+}
