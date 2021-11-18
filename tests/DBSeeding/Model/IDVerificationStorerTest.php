@@ -1,47 +1,47 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Barryosull\TestingPainTests\DBSeeding\Repostiory;
+namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\Card;
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\CardFactory;
 use Barryosull\TestingPain\DBSeeding\Model\IDVerification;
 use Barryosull\TestingPain\DBSeeding\Model\IDVerificationStatus;
+use Barryosull\TestingPain\DBSeeding\Model\IDVerificationStorer;
 use Barryosull\TestingPain\DBSeeding\Model\Shop;
 use Barryosull\TestingPain\DBSeeding\Model\ShopFinder;
-use Barryosull\TestingPain\DBSeeding\Repository\IDVerificationRepository;
-use Barryosull\TestingPain\DBSeeding\Repository\IDVerificationRepositoryUiUpdater;
 use PHPUnit\Framework\TestCase;
 
-class IDVerificationRepositoryUiUpdateTest extends TestCase
+class IDVerificationStorerTest extends TestCase
 {
     const SHOP_ID = 1;
 
-    private $wrapped_repo;
+    /** @var ShopFinder */
     private $shop_finder;
+    /** @var CardFactory */
     private $card_factory;
 
-    private $repo;
+    private $storer;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->wrapped_repo = $this->createMock(IDVerificationRepository::class);
         $this->shop_finder = $this->createMock(ShopFinder::class);
         $this->card_factory = $this->createMock(CardFactory::class);
 
-        $this->repo = new IDVerificationRepositoryUiUpdater($this->wrapped_repo, $this->shop_finder, $this->card_factory);
+        $this->storer = new IDVerificationStorer($this->shop_finder, $this->card_factory);
     }
 
     /**
      * @test
      */
-    public function stores_in_wrapped_repo() {
+    public function stores_id_verification()
+    {
         $this->givenShopExists();
         $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::VERIFIED);
-        $this->expectVerificationToBeStoredInWrappedRepo($id_verification);
+        $this->expectVerificationToBeStored($id_verification);
 
-        $this->repo->store($id_verification);
+        $this->storer->store($id_verification);
     }
 
     /**
@@ -53,7 +53,7 @@ class IDVerificationRepositoryUiUpdateTest extends TestCase
         $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::FAILED);
         $this->expectCardToBeCreatedForShop($shop);
 
-        $this->repo->store($id_verification);
+        $this->storer->store($id_verification);
     }
 
     /**
@@ -63,12 +63,13 @@ class IDVerificationRepositoryUiUpdateTest extends TestCase
     {
         $shop = $this->givenShopExists();
         $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::VERIFIED);
-        $this->expectCardToBeAddressForShop($shop);
+        $this->expectCardToBeAddressedForShop($shop);
 
-        $this->repo->store($id_verification);
+        $this->storer->store($id_verification);
     }
 
-    private function makeVerificationWithStatus(string $status): IDVerification {
+    private function makeVerificationWithStatus(string $status): IDVerification
+    {
         $verification = $this->createMock(IDVerification::class);
         $verification->shop_id = self::SHOP_ID;
         $verification->verification_status = IDVerificationStatus::VERIFIED;
@@ -84,9 +85,9 @@ class IDVerificationRepositoryUiUpdateTest extends TestCase
         return $shop;
     }
 
-    private function expectVerificationToBeStoredInWrappedRepo(IDVerification $verification)
+    private function expectVerificationToBeStored(IDVerification $verification)
     {
-        $this->wrapped_repo->expects($this->once())
+        $verification->expects($this->once())
             ->method('store')
             ->with($verification);
     }
@@ -103,7 +104,7 @@ class IDVerificationRepositoryUiUpdateTest extends TestCase
             ->with($shop);
     }
 
-    private function expectCardToBeAddressForShop(Shop $shop)
+    private function expectCardToBeAddressedForShop(Shop $shop)
     {
         $card = $this->createMock(Card::class);
         $this->card_factory->method('make')
