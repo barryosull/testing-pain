@@ -6,16 +6,16 @@ use Barryosull\TestingPain\PartialMocks\Request\UpdateUser;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
-class CreateUserTest extends TestCase
+class UpdateUserTest extends TestCase
 {
     /**
      * @test
      */
     public function sends_request_and_parses_result()
     {
-        $method = 'POST';
+        $method = 'PUT';
         $partial_uri = '/user/';
-        $update_user_request = $this->createPartialMock(UpdateUser::class, ['getCredentials', 'makeApiCall']);
+        $update_user_request = $this->createPartialMock(UpdateUser::class, ['getCredentials', 'makeCall']);
 
         $credentials = ['username' => 'test', 'password' => 'password'];
 
@@ -33,20 +33,21 @@ class CreateUserTest extends TestCase
         $response = [
             'status' => 200,
             'data' => [
-                'user_id' => 1,
+                'entity_id' => 1,
             ]
         ];
 
-        $update_user_request->method('makeApiCall')
+        $update_user_request->method('makeCall')
             ->with($method, $partial_uri, $api_data, $credentials)
             ->willReturn($response);
 
         $dob = new DateTime('1993-10-10');
 
+        $update_user_request->set('user_id', 1);
         $update_user_request->set('name', 'Test User2');
         $update_user_request->set('dob', $dob);
         $update_user_request->set('email', 'test@email2.com');
-        $update_user_request->set('tshirt_size', 's');
+        $update_user_request->set('tshirt_size', 'm');
 
         $result = $update_user_request->send();
 

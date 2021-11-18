@@ -13,9 +13,9 @@ class CreateUserTest extends TestCase
      */
     public function sends_request_and_parses_result()
     {
-        $method = 'PUT';
+        $method = 'POST';
         $partial_uri = '/user/';
-        $create_user_request = $this->createPartialMock(CreateUser::class, ['getCredentials', 'makeApiCall']);
+        $create_user_request = $this->createPartialMock(CreateUser::class, ['getCredentials', 'makeCall']);
 
         $credentials = ['username' => 'test', 'password' => 'password'];
 
@@ -32,11 +32,11 @@ class CreateUserTest extends TestCase
         $response = [
             'status' => 200,
             'data' => [
-                'user_id' => 1,
+                'entity_id' => 1,
             ]
         ];
 
-        $create_user_request->method('makeApiCall')
+        $create_user_request->method('makeCall')
             ->with($method, $partial_uri, $api_data, $credentials)
             ->willReturn($response);
 

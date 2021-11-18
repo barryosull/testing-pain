@@ -24,12 +24,7 @@ abstract class AbstractRequest
 
     public function send(): array
     {
-        $method = $this->method;
-        $data = $this->data;
-        $credentials = $this->getCredentials();
-
-        $response = $this->makeCall($method, $data, $credentials);
-
+        $response = $this->makeCall($this->method, $this->partial_uri, $this->data, $this->getCredentials());
         return $this->formatResponse($response);
     }
 
@@ -50,9 +45,9 @@ abstract class AbstractRequest
         ];
     }
 
-    protected function makeCall(string $method, array $data, array $credentials): array
+    protected function makeCall(string $method, string $partial_uri, array $data, array $credentials): array
     {
-        $connection = curl_init($this->base_url);
+        $connection = curl_init($this->base_url . $partial_uri);
         curl_setopt($connection, CURLOPT_USERPWD, $credentials['username'] . ":" . $credentials['password']);
         if ($method === 'POST') {
             curl_setopt($connection, CURLOPT_POSTFIELDS, $data);
