@@ -4,13 +4,15 @@ namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
 
 use Barryosull\TestingPain\DBSeeding\Model\Shop;
 
-class IDVerificationFailed {
+class IDVerificationFailedWarning implements Card {
 
-    public function createForShop(Shop $shop) {
+    public function createForShop(Shop $shop)
+    {
 
     }
 
-    public function markAsAddressed(Shop $shop) {
+    public function markAsAddressed(Shop $shop)
+    {
 
     }
 }
