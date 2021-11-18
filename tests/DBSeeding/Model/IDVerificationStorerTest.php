@@ -32,6 +32,10 @@ class IDVerificationStorerTest extends TestCase
         $this->storer = new IDVerificationStorer($this->shop_finder, $this->card_factory);
     }
 
+    //*********************************
+    // Testcases
+    //*********************************
+
     /**
      * @test
      */
@@ -68,6 +72,11 @@ class IDVerificationStorerTest extends TestCase
         $this->storer->store($id_verification);
     }
 
+
+    //*********************************
+    // Factories
+    //*********************************
+
     private function makeVerificationWithStatus(string $status): IDVerification
     {
         $verification = $this->createMock(IDVerification::class);
@@ -75,6 +84,11 @@ class IDVerificationStorerTest extends TestCase
         $verification->verification_status = IDVerificationStatus::VERIFIED;
         return $verification;
     }
+
+
+    //*********************************
+    // Given (fakes)
+    //*********************************
 
     private function givenShopExists(): Shop
     {
@@ -84,6 +98,11 @@ class IDVerificationStorerTest extends TestCase
             ->willReturn($shop);
         return $shop;
     }
+
+
+    //*********************************
+    // Expectations (side effects)
+    //*********************************
 
     private function expectVerificationToBeStored(IDVerification $verification)
     {
