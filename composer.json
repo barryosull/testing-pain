@@ -2,7 +2,9 @@
     "name": "barryosull/testing-pain",
     "type": "project",
     "require": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
