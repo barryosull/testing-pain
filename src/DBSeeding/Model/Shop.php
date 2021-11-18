@@ -6,5 +6,5 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
  * @property int $shop_id
  */
 class Shop {
-
+    public $shop_id;
 }
