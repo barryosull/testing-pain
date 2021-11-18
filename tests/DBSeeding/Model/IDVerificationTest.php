@@ -77,8 +77,8 @@ class IDVerificationTest extends TestCase {
                     'type' =>  256,
                     'dismissal_duration' =>  0,
                     'duration_type' =>  1,
-                    'image_url' =>  '/images/seller-tools/dashboard_2016/notifications.svg',
-                    'image_url_2' =>  '/images/seller-tools/dashboard_2016/notifications.svg',
+                    'image_url' =>  '/images/shop-tools/dashboard/notifications.svg',
+                    'image_url_2' =>  '/images/shop-tools/dashboard/notifications.svg',
                     'zone' => 22,
                     'target_platform' => 1,
                 ]

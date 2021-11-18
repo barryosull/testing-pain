@@ -10,6 +10,9 @@ use Barryosull\TestingPain\DBSeeding\AdvisoryCard\IDVerificationFailed;
  */
 class IDVerification extends ActiveRecordBaseModel {
 
+    public $shop_id;
+    public $verification_status;
+
     public function recordStored($dirtyData = null) {
         parent::recordStored($dirtyData);
 
