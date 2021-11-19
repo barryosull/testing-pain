@@ -13,16 +13,18 @@ class HttpClient
         $this->base_url = $base_url;
     }
 
-    public function makeApiCall(string $method, string $partial_uri, array $data, array $credentials): array
+    public function makeApiCall(Request $request): array
     {
-        $connection = curl_init($this->base_url . $partial_uri);
+        $credentials = $this->getCredentials();
+
+        $connection = curl_init($this->base_url . $request->partialUri());
         curl_setopt($connection, CURLOPT_USERPWD, $credentials['username'] . ":" . $credentials['password']);
-        if ($method === 'POST') {
-            curl_setopt($connection, CURLOPT_POSTFIELDS, $data);
+        if ($request->httpMethod() === 'POST') {
+            curl_setopt($connection, CURLOPT_POSTFIELDS, $request->makeServiceRequest());
         }
-        if ($method === 'PUT') {
+        if ($request->httpMethod() === 'PUT') {
             curl_setopt($connection, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($connection, CURLOPT_POSTFIELDS,http_build_query($data));
+            curl_setopt($connection, CURLOPT_POSTFIELDS,http_build_query($request->makeServiceRequest()));
         }
         curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
         $api_response = curl_exec($connection);

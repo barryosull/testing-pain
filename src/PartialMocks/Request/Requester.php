@@ -13,13 +13,7 @@ class Requester
 
     public function makeRequest(Request $request): array
     {
-        $credentials = $this->http_client->getCredentials();
-        $response = $this->http_client->makeApiCall(
-            $request->httpMethod(),
-            $request->partialUri(),
-            $request->makeServiceRequest(),
-            $credentials
-        );
+        $response = $this->http_client->makeApiCall($request);
         return $request->adaptResponse($response);
     }
 }

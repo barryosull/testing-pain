@@ -10,41 +10,42 @@ use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
-    private $http_client;
-    private $requester;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->http_client = $this->createMock(HttpClient::class);
-
-        $this->requester = new Requester($this->http_client);
-    }
-
     /**
      * @test
      */
-    public function sends_request_and_parses_result()
+    public function adapts_request_for_service()
     {
         $name = 'Test User';
         $dob = new DateTime('1994-10-10');
         $email = 'test@email.com';
         $tshirt_size = 's';
 
-        $service_request = $this->makeExpectedServiceRequest($name, $email);
+        $expected_request = $this->makeExpectedServiceRequest($name, $email);
 
-        $user_id = 1;
-        $service_response = $this->makeServiceResponse($user_id);
+        $request = new CreateUser($name, $dob, $email, $tshirt_size);
 
-        $this->givenRequestGivesResponse($service_request, $service_response);
+        $adapted_request = $request->makeServiceRequest();
 
-        $result = $this->whenRequestIsSent($name, $dob, $email, $tshirt_size);
-
-        $expected_result = $this->makeExpectedResponse($user_id);
-        $this->assertEquals($expected_result, $result);
+        $this->assertEquals($expected_request, $adapted_request);
     }
 
+    /**
+     * @test
+     */
+    public function adapts_response_from_service()
+    {
+        $user_id = 1;
+
+        $request = new CreateUser('', new DateTime(), '', '');
+
+        $service_response = $this->makeServiceResponse($user_id);
+
+        $response = $request->adaptResponse($service_response);
+
+        $expected_response = $this->makeExpectedResponse($user_id);
+
+        $this->assertEquals($expected_response, $response);
+    }
 
     private function makeExpectedServiceRequest(string $name, string $email): array
     {
@@ -71,24 +72,5 @@ class CreateUserTest extends TestCase
     private function makeExpectedResponse(int $user_id): array
     {
         return ['user_id' => $user_id];
-    }
-
-    private function givenRequestGivesResponse(array $expected_api_data, array $response): void
-    {
-        $credentials = ['username' => 'test', 'password' => 'password'];
-        $this->http_client->method('getCredentials')
-            ->willReturn($credentials);
-
-        $method = 'POST';
-        $partial_uri = '/user/';
-        $this->http_client->method('makeApiCall')
-            ->with($method, $partial_uri, $expected_api_data, $credentials)
-            ->willReturn($response);
-    }
-
-    private function whenRequestIsSent(string $name, DateTime $dob, string $email, string $tshirt_size): array
-    {
-        $request = new CreateUser($name, $dob, $email, $tshirt_size);
-        return $this->requester->makeRequest($request);
     }
 }

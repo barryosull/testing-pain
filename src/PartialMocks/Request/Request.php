@@ -10,5 +10,5 @@ interface Request
 
     public function makeServiceRequest(): array;
 
-    public function adaptResponse(array $response): array;
+    public function adaptResponse(array $service_response): array;
 }
