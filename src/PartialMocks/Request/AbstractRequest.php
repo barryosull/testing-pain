@@ -30,7 +30,9 @@ abstract class AbstractRequest
 
     public function set(string $key, $value)
     {
-        $format_method = 'format' . ucfirst($key);
+        $keyCamelCase = $str = str_replace('_', '', ucwords($key, '_'));
+
+        $format_method = 'format' . $keyCamelCase;
         if (method_exists($this, $format_method)) {
             $value = $this->$format_method($value);
         }

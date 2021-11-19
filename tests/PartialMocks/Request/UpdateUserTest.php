@@ -27,7 +27,7 @@ class UpdateUserTest extends TestCase
             'name' => 'Test User2',
             'dob' => '10/10/1993',
             'email' => 'test@email2.com',
-            'tshirt_size' => 'm',
+            'tshirt_size' => 2
         ];
 
         $response = [

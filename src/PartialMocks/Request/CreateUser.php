@@ -14,6 +14,17 @@ class CreateUser extends AbstractRequest
         return  $dob->format('d/m/Y');
     }
 
+    protected function formatTshirtSize(string $size): int
+    {
+        if ($size === 's') {
+            return 1;
+        }
+        if ($size === 'm') {
+            return 2;
+        }
+        return 3;
+    }
+
     protected function formatResponse(array $response): array
     {
         return [

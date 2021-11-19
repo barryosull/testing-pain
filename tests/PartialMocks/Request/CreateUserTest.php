@@ -26,7 +26,7 @@ class CreateUserTest extends TestCase
             'name' => 'Test User',
             'dob' => '10/10/1994',
             'email' => 'test@email.com',
-            'tshirt_size' => 's',
+            'tshirt_size' => 1,
         ];
 
         $response = [
