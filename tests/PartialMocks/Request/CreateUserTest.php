@@ -8,49 +8,87 @@ use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
+    private $request;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->request = $this->createPartialMock(CreateUser::class, ['getCredentials', 'makeCall']);
+    }
+
     /**
      * @test
      */
     public function sends_request_and_parses_result()
     {
-        $method = 'POST';
-        $partial_uri = '/user/';
-        $create_user_request = $this->createPartialMock(CreateUser::class, ['getCredentials', 'makeCall']);
+        $name = 'Test User';
+        $dob = new DateTime('1994-10-10');
+        $email = 'test@email.com';
+        $tshirt_size = 's';
 
-        $credentials = ['username' => 'test', 'password' => 'password'];
+        $service_request = $this->makeExpectedServiceRequest($name, $email);
 
-        $create_user_request->method('getCredentials')
-            ->willReturn($credentials);
+        $user_id = 1;
+        $service_response = $this->makeServiceResponse($user_id);
 
-        $api_data = [
-            'name' => 'Test User',
-            'dob' => '10/10/1994',
-            'email' => 'test@email.com',
-            'tshirt_size' => 1,
+        $this->givenRequestGivesResponse($service_request, $service_response);
+
+        $result = $this->whenRequestIsSent($name, $dob, $email, $tshirt_size);
+
+        $expected_result = $this->makeExpectedResponse($user_id);
+        $this->assertEquals($expected_result, $result);
+    }
+
+
+    private function makeExpectedServiceRequest(string $name, string $email): array
+    {
+        $expected_dob = '10/10/1994';
+        $expected_tshirt_size = 1;
+        return [
+            'name' => $name,
+            'dob' => $expected_dob,
+            'email' => $email,
+            'tshirt_size' => $expected_tshirt_size,
         ];
+    }
 
-        $response = [
+    private function makeServiceResponse(int $user_id): array
+    {
+        return [
             'status' => 200,
             'data' => [
-                'entity_id' => 1,
+                'entity_id' => $user_id,
             ]
         ];
+    }
 
-        $create_user_request->method('makeCall')
-            ->with($method, $partial_uri, $api_data, $credentials)
+    private function makeExpectedResponse(int $user_id): array
+    {
+        return ['user_id' => $user_id];
+    }
+
+    private function givenRequestGivesResponse(array $expected_api_data, array $response): void
+    {
+        $credentials = ['username' => 'test', 'password' => 'password'];
+        $this->request->method('getCredentials')
+            ->willReturn($credentials);
+
+        $method = 'POST';
+        $partial_uri = '/user/';
+        $this->request->method('makeCall')
+            ->with($method, $partial_uri, $expected_api_data, $credentials)
             ->willReturn($response);
+    }
 
-        $dob = new DateTime('1994-10-10');
+    private function whenRequestIsSent(string $name, DateTime $dob, string $email, string $tshirt_size): array
+    {
+        $this->request->set('name', $name);
+        $this->request->set('dob', $dob);
+        $this->request->set('email', $email);
+        $this->request->set('tshirt_size', $tshirt_size);
 
-        $create_user_request->set('name', 'Test User');
-        $create_user_request->set('dob', $dob);
-        $create_user_request->set('email', 'test@email.com');
-        $create_user_request->set('tshirt_size', 's');
-
-        $result = $create_user_request->send();
-
-        $expected_result = ['user_id' => 1];
-
-        $this->assertEquals($expected_result, $result);
+        $result = $this->request->send();
+        return $result;
     }
 }
