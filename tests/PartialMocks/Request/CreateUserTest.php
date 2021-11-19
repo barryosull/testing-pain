@@ -3,18 +3,23 @@
 namespace Barryosull\TestingPainTests\PartialMocks\Request;
 
 use Barryosull\TestingPain\PartialMocks\Request\CreateUser;
+use Barryosull\TestingPain\PartialMocks\Request\HttpClient;
+use Barryosull\TestingPain\PartialMocks\Request\Requester;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
-    private $request;
+    private $http_client;
+    private $requester;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->request = $this->createPartialMock(CreateUser::class, ['getCredentials', 'makeCall']);
+        $this->http_client = $this->createMock(HttpClient::class);
+
+        $this->requester = new Requester($this->http_client);
     }
 
     /**
@@ -71,24 +76,19 @@ class CreateUserTest extends TestCase
     private function givenRequestGivesResponse(array $expected_api_data, array $response): void
     {
         $credentials = ['username' => 'test', 'password' => 'password'];
-        $this->request->method('getCredentials')
+        $this->http_client->method('getCredentials')
             ->willReturn($credentials);
 
         $method = 'POST';
         $partial_uri = '/user/';
-        $this->request->method('makeCall')
+        $this->http_client->method('makeApiCall')
             ->with($method, $partial_uri, $expected_api_data, $credentials)
             ->willReturn($response);
     }
 
     private function whenRequestIsSent(string $name, DateTime $dob, string $email, string $tshirt_size): array
     {
-        $this->request->set('name', $name);
-        $this->request->set('dob', $dob);
-        $this->request->set('email', $email);
-        $this->request->set('tshirt_size', $tshirt_size);
-
-        $result = $this->request->send();
-        return $result;
+        $request = new CreateUser($name, $dob, $email, $tshirt_size);
+        return $this->requester->makeRequest($request);
     }
 }

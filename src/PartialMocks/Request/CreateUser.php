@@ -4,17 +4,27 @@ namespace Barryosull\TestingPain\PartialMocks\Request;
 
 use DateTime;
 
-class CreateUser extends AbstractRequest
+class CreateUser implements Request
 {
-    protected $method = 'POST';
-    protected $partial_uri = '/user/';
+    private $name;
+    private $dob;
+    private $email;
+    private $tshirt_size;
 
-    protected function formatDob(DateTime $dob): string
+    public function __construct(string $name, DateTime $dob, string $email, string $tshirt_size)
+    {
+        $this->name = $name;
+        $this->dob = $dob;
+        $this->email = $email;
+        $this->tshirt_size = $tshirt_size;
+    }
+
+    private function formatDob(DateTime $dob): string
     {
         return  $dob->format('d/m/Y');
     }
 
-    protected function formatTshirtSize(string $size): int
+    private function formatTshirtSize(string $size): int
     {
         if ($size === 's') {
             return 1;
@@ -25,7 +35,27 @@ class CreateUser extends AbstractRequest
         return 3;
     }
 
-    protected function formatResponse(array $response): array
+    public function partialUri(): string
+    {
+        return '/user/';
+    }
+
+    public function httpMethod(): string
+    {
+        return 'POST';
+    }
+
+    public function makeServiceRequest(): array
+    {
+        return [
+            'name' => $this->name,
+            'dob' => $this->formatDob($this->dob),
+            'email' => $this->email,
+            'tshirt_size' => $this->formatTshirtSize($this->tshirt_size)
+        ];
+    }
+
+    public function adaptResponse(array $response): array
     {
         return [
             'user_id' => $response['data']['entity_id']
