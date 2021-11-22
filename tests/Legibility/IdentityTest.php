@@ -75,7 +75,7 @@ class IdentityTest extends TestCase {
         TestingConfig::reset();
     }
 
-    public function test_400BadRequestOnMissingRequestDetails() {
+    public function test_400_badRequestOnMissingRequestDetails() {
         $input_array = $this->makeHttpInputArray(['is_business' => true]);
 
         $this->expectException(HTTP\BadRequestError::class);
@@ -83,7 +83,7 @@ class IdentityTest extends TestCase {
         $this->whenIdentityIsSubmitted(self::BUSINESS_SHOP_ID, $input_array);
     }
 
-    public function test_400BadRequestIfCountryRequiresJurisdictionButNotProvided() {
+    public function test_400_badRequestIfCountryRequiresJurisdictionButNotProvided() {
         $input_array = $this->getMakeHttpInputArrayWithMissingJurisdiction();
 
         $this->expectException(HTTP\BadRequestError::class);
@@ -91,7 +91,7 @@ class IdentityTest extends TestCase {
         $this->whenIdentityIsSubmitted(self::BUSINESS_SHOP_ID, $input_array);
     }
 
-    public function test_400BadRequestIfCountryRequiresIdButNotProvided() {
+    public function test_400_badRequestIfCountryRequiresIdButNotProvided() {
         $input_array = $this->getMakeHttpInputArrayWithMissingId();
 
         $this->expectException(HTTP\BadRequestError::class);
@@ -99,7 +99,7 @@ class IdentityTest extends TestCase {
         $this->whenIdentityIsSubmitted(self::BUSINESS_SHOP_ID, $input_array);
     }
 
-    public function test_400BadRequestWhenInvalidBusinessAndCountryIDUsed() {
+    public function test_400_badRequestWhenInvalidBusinessAndCountryIDUsed() {
         $http_input = $this->makeHttpInputArrayWithInvalidCountyId();
 
         $this->expectException(HTTP\BadRequestError::class);
@@ -108,7 +108,7 @@ class IdentityTest extends TestCase {
         $this->whenIdentityIsSubmitted(self::BUSINESS_SHOP_ID, $http_input);
     }
 
-    public function test_200OKSetsCorrectIdentityDetailsForIndividual_noIndividualIdRequired() {
+    public function test_200_setsCorrectIdentityDetailsForIndividual_noIndividualIdRequired() {
         $this->givenIdsAreNotRequired();
 
         $this->whenIdentityIsSubmitted(self::INDIVIDUAL_SHOP_ID, $this->makeHttpInputArray());
@@ -117,7 +117,7 @@ class IdentityTest extends TestCase {
         $this->assertShopAddressIsIndividuals(self::INDIVIDUAL_SHOP_ID);
     }
 
-    public function test_200OKSetsCorrectIdentityDetailsWithAddressConfirmationDisabled_noIndividualIdRequired() {
+    public function test_200_setsCorrectIdentityDetailsWithAddressConfirmationDisabled_noIndividualIdRequired() {
         $this->givenIdsAreNotRequired();
         $this->givenAddressConfirmationIsNotRequired();
 
@@ -129,7 +129,7 @@ class IdentityTest extends TestCase {
         $this->assertShopAddressIsIndividuals(self::INDIVIDUAL_SHOP_ID);
     }
 
-    public function test_200OKSetsCorrectIdentityDetailsForIndividual_individualIdRequired() {
+    public function test_200_setsCorrectIdentityDetailsForIndividual_individualIdRequired() {
         $this->givenIdsAreRequired();
 
         $this->expectIdentityToBeCreatedForYear();
@@ -140,7 +140,7 @@ class IdentityTest extends TestCase {
         $this->assertShopAddressIsIndividuals(self::INDIVIDUAL_SHOP_ID);
     }
 
-    public function test_200OKSetsCorrectBusinessIdentityDetailsForBusiness() {
+    public function test_200_setsCorrectBusinessIdentityDetailsForBusiness() {
         $http_input = $this->makeHttpInputArrayForBusiness();
 
         $this->expectIdentityToBeCreatedForYear();
@@ -152,7 +152,7 @@ class IdentityTest extends TestCase {
         $this->assertOwnersWereAdded(self::BUSINESS_SHOP_ID);
     }
 
-    public function test_200OKSetsCorrectBusinessIdentityDetailsForNonUSBusiness() {
+    public function test_200_setsCorrectBusinessIdentityDetailsForNonUSBusiness() {
         $non_us_business_identity = $this->makeNonUsBusinessIdentity();
         $http_input = $this->makeHttpInputArrayForBusiness($non_us_business_identity);
 
@@ -165,7 +165,7 @@ class IdentityTest extends TestCase {
         $this->assertOwnersWereAdded(self::BUSINESS_SHOP_ID);
     }
 
-    public function test_200OkDoesNotOverwriteAddressOnQuestionsAnswered() {
+    public function test_200_doesNotOverwriteAddressOnQuestionsAnswered() {
         $http_input = $this->makeHttpInputArrayForBusiness();
 
         $this->expectIdentityToBeCreatedForYear();
