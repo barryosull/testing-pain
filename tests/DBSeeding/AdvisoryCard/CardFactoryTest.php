@@ -19,7 +19,8 @@ class CardFactoryTest extends TestCase
         $this->assertInstanceOf($expected_class, $card);
     }
 
-    public function provideShopsToCards(): array {
+    public function provideShopsToCards(): array
+    {
         return [
             'odd shop id' => [
                 1,
