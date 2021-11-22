@@ -16,7 +16,7 @@ use Barryosull\TestingPainTests\Legibility\TestingSpyConstructorOverloader;
 use PHPUnit\Framework\TestCase;
 use Barryosull\TestingPain\Legibility\HTTP;
 
-class IdentityTest extends TestCase
+class IdentityControllerTest extends TestCase
 {
     const INDIVIDUAL_SHOP_ID = 1;
     const BUSINESS_SHOP_ID = 2;
