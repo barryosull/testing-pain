@@ -16,7 +16,8 @@ use Barryosull\TestingPainTests\Legibility\TestingSpyConstructorOverloader;
 use PHPUnit\Framework\TestCase;
 use Barryosull\TestingPain\Legibility\HTTP;
 
-class IdentityTest extends TestCase {
+class IdentityTest extends TestCase
+{
     const INDIVIDUAL_SHOP_ID = 1;
     const BUSINESS_SHOP_ID = 2;
 
@@ -27,7 +28,8 @@ class IdentityTest extends TestCase {
         self::BUSINESS_SHOP_ID => 'BusinessShop',
     ];
 
-    public function seedData() {
+    public function seedData()
+    {
         $config = [
             'shops' => [],
             'users' => [],
@@ -59,7 +61,8 @@ class IdentityTest extends TestCase {
         DbSeeder::seed($config);
     }
 
-    public function setUp() : void {
+    public function setUp() : void
+    {
         parent::setUp();
 
         $this->seedData();
@@ -107,15 +110,17 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function tearDown() : void {
+    public function tearDown() : void
+    {
         $this->spy->restore();
         TestingConfig::reset();
     }
 
-    private function createInput(array $values = []) {
+    private function createInput(array $values = []): array
+    {
         return array_merge([
-            'firstname' => 'Jane',
-            'last_name' => 'Doe',
+            'firstname' => 'Owner',
+            'last_name' => 'Person',
             'day' => 10,
             'month' => 5,
             'year' => 1991,
@@ -131,19 +136,20 @@ class IdentityTest extends TestCase {
         ], $values);
     }
 
-    private function createOwnerInput(array $values_per_owner = [[]]) {
+    private function createOwnerInput(array $values_per_owner = [[]]): array
+    {
         return array_map(function($values) {
             return array_merge([
                 'owner_id' => null,
                 'birthday_month'      => 2,
                 'birthday_year'       => 1991,
                 'birthday_day'        => 20,
-                'name'                => 'Owner Doe',
+                'name'                => 'Owner Person',
                 'last_four_id'       => '2222',
                 'primary'             => true,
                 'relationship'        => 'owner',
                 'address'             => [
-                    'name' => 'Owner Doe',
+                    'name' => 'Owner Person',
                     'first_line' => '22 California St',
                     'city' => 'San Francisco',
                     'state' => 'CA',
@@ -155,7 +161,8 @@ class IdentityTest extends TestCase {
         }, $values_per_owner);
     }
 
-    private function createBusinessIdentityInput(array $values = []) {
+    private function createBusinessIdentityInput(array $values = [])
+    {
         return array_merge([
             'address' => [
                 'name' => 'Shop Business Address',
@@ -172,7 +179,8 @@ class IdentityTest extends TestCase {
         ], $values);
     }
 
-    public function test400BadRequestOnMissingRequestDetails() {
+    public function test400BadRequestOnMissingRequestDetails()
+    {
         $this->expectException(HTTP\BadRequestError::class);
         Api::callShop(
             self::BUSINESS_SHOP_ID,
@@ -181,7 +189,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test400BadRequestIfCountryRequiresJurisdictionButNotProvided() {
+    public function test400BadRequestIfCountryRequiresJurisdictionButNotProvided()
+    {
         $this->expectException(HTTP\BadRequestError::class);
         Api::callShop(
             self::BUSINESS_SHOP_ID,
@@ -207,7 +216,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test400BadRequestIfCountryRequiresIdButNotProvided() {
+    public function test400BadRequestIfCountryRequiresIdButNotProvided()
+    {
         $this->expectException(HTTP\BadRequestError::class);
         Api::callShop(
             self::BUSINESS_SHOP_ID,
@@ -233,7 +243,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test200OKSetsCorrectIdentityDetailsForIndividual_noIndividualIdRequired() {
+    public function test200OKSetsCorrectIdentityDetailsForIndividual_noIndividualIdRequired()
+    {
         $this->configureIfIDsAreRequired($are_ids_required = false);
         Api::callShop(
             self::INDIVIDUAL_SHOP_ID,
@@ -256,13 +267,14 @@ class IdentityTest extends TestCase {
             'Shop address uses the individual identity'
         );
         $this->assertEquals(
-            'Jane Doe',
+            'Owner Person',
             $address['name'],
             'Shop address uses the individual identity'
         );
     }
 
-    public function test_200OKSetsCorrectIdentityDetailsWithAddressConfirmDisabled_noIndividualIdRequired() {
+    public function test_200OKSetsCorrectIdentityDetailsWithAddressConfirmDisabled_noIndividualIdRequired()
+    {
         $this->configureIfIDsAreRequired($are_ids_required = false);
         TestingConfig::disableFeature("address_confirm");
 
@@ -292,13 +304,14 @@ class IdentityTest extends TestCase {
             'Shop address uses the individual identity'
         );
         $this->assertEquals(
-            'Jane Doe',
+            'Owner Person',
             $address['name'],
             'Shop address uses the individual identity'
         );
     }
 
-    public function test_200OKSetsCorrectIdentityDetailsForIndividual_individualIdRequired() {
+    public function test_200OKSetsCorrectIdentityDetailsForIndividual_individualIdRequired()
+    {
         $this->configureIfIDsAreRequired($are_ids_required = true);
 
         $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
@@ -327,13 +340,14 @@ class IdentityTest extends TestCase {
             'Shop address uses the individual identity'
         );
         $this->assertEquals(
-            'Jane Doe',
+            'Owner Person',
             $address['name'],
             'Shop address uses the individual identity'
         );
     }
 
-    public function test_200OKSetsCorrectBusinessIdentityDetailsForBusiness() {
+    public function test_200OKSetsCorrectBusinessIdentityDetailsForBusiness()
+    {
         $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
         $create_identity_command->expects($this->once())
             ->method('run');
@@ -372,7 +386,7 @@ class IdentityTest extends TestCase {
         $owners_finder = new OwnerFinder();
         $owners = $owners_finder->findAllForShopId(self::BUSINESS_SHOP_ID);
         $this->assertEqualsCanonicalizing(
-            [['owner' => 'Business Doe']],
+            [['owner' => 'Business Person']],
             array_map(function($owner) {
                 return ['name' => $owner['name']];
             }, $owners),
@@ -380,7 +394,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test_200OKSetsCorrectBusinessIdentityDetailsForNonUSBusiness() {
+    public function test_200OKSetsCorrectBusinessIdentityDetailsForNonUSBusiness()
+    {
         $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
         $create_identity_command->expects($this->never())
             ->method('run');
@@ -433,7 +448,7 @@ class IdentityTest extends TestCase {
         $owners_finder = new OwnerFinder();
         $owners = $owners_finder->findAllForShopId(self::BUSINESS_SHOP_ID);
         $this->assertEqualsCanonicalizing(
-            [['owner' => 'Owner Doe']],
+            [['owner' => 'Owner Person']],
             array_map(function($owner) {
                 return ['name' => $owner['name']];
             }, $owners),
@@ -441,7 +456,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test_400BadRequestWhenInvalidBusinessAndBankCountryIDUsed() {
+    public function test_400BadRequestWhenInvalidBusinessAndBankCountryIDUsed()
+    {
         $this->expectException(HTTP\BadRequestError::class);
 
         $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
@@ -461,7 +477,8 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test_200OkDoesNotOverwriteAddressOnQuestionsAnswered() {
+    public function test_200OkDoesNotOverwriteAddressOnQuestionsAnswered()
+    {
         TestingConfig::enableFeature('address_confirm');
 
         $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
@@ -499,13 +516,15 @@ class IdentityTest extends TestCase {
         );
     }
 
-    public function test_AddressArrayContainsIdIfItsInTheInput() {
+    public function test_AddressArrayContainsIdIfItsInTheInput()
+    {
         $input = (new HTTP\Input())->newInputWithData($this->createInput());
         $address = IdentityController::makeAddressArrayFromInput($input);
         $this->assertArrayHasKey('id', $address);
     }
 
-    private function configureIfIDsAreRequired(bool $are_ids_required) {
+    private function configureIfIDsAreRequired(bool $are_ids_required)
+    {
         $enabled = ($are_ids_required) ? 100 : 0;
         TestingConfig::setForTest([
             'config' => [
