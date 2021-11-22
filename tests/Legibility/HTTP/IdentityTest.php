@@ -124,7 +124,7 @@ class IdentityTest extends TestCase
             'day' => 10,
             'month' => 5,
             'year' => 1991,
-            'street_name' => 'California St',
+            'street_name' => 'Fake St',
             'street_number' => '11',
             'city' => 'San Francisco',
             'state' => 'CA',
@@ -150,7 +150,7 @@ class IdentityTest extends TestCase
                 'relationship'        => 'owner',
                 'address'             => [
                     'name' => 'Owner Person',
-                    'first_line' => '22 California St',
+                    'first_line' => '22 Fake St',
                     'city' => 'San Francisco',
                     'state' => 'CA',
                     'zip' => '94111',
@@ -166,7 +166,7 @@ class IdentityTest extends TestCase
         return array_merge([
             'address' => [
                 'name' => 'Shop Business Address',
-                'first_line' => '33 California St',
+                'first_line' => '33 Fake St',
                 'city' => 'San Francisco',
                 'state' => 'CA',
                 'zip' => '94111',
@@ -201,7 +201,7 @@ class IdentityTest extends TestCase
                 'business_identity' => $this->createBusinessIdentityInput([
                     'address' => [
                         'name' => 'Shop Business Address',
-                        'first_line' => '33 California St',
+                        'first_line' => '33 Fake St',
                         'city' => 'San Francisco',
                         'state' => 'CA',
                         'zip' => '94111',
@@ -228,7 +228,7 @@ class IdentityTest extends TestCase
                 'business_identity' => $this->createBusinessIdentityInput([
                     'address' => [
                         'name' => 'Shop Business Address',
-                        'first_line' => '33 California St',
+                        'first_line' => '33 Fake St',
                         'city' => 'San Francisco',
                         'state' => 'CA',
                         'zip' => '94111',
@@ -262,7 +262,7 @@ class IdentityTest extends TestCase
 
         $address = $shop->address();
         $this->assertEquals(
-            '11 California St',
+            '11 Fake St',
             $address['first_line'],
             'Shop address uses the individual identity'
         );
@@ -299,7 +299,7 @@ class IdentityTest extends TestCase
 
         $address = $shop->address();
         $this->assertEquals(
-            '11 California St',
+            '11 Fake St',
             $address['first_line'],
             'Shop address uses the individual identity'
         );
@@ -335,7 +335,7 @@ class IdentityTest extends TestCase
 
         $address = $shop->address();
         $this->assertEquals(
-            '11 California St',
+            '11 Fake St',
             $address['first_line'],
             'Shop address uses the individual identity'
         );
@@ -373,7 +373,7 @@ class IdentityTest extends TestCase
 
         $address = $shop->address();
         $this->assertEquals(
-            '33 California St',
+            '33 Fake St',
             $address['first_line'],
             'Shop address uses the business identity'
         );
