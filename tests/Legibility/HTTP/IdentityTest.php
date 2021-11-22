@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Barryosull\TestingPainTests\Legibility;
+namespace Barryosull\TestingPainTests\Legibility\HTTP;
 
 use Barryosull\TestingPain\Legibility\Command\CreateIdentityForCurrentYear;
 use Barryosull\TestingPain\Legibility\HTTP\IdentityController;
@@ -8,7 +8,10 @@ use Barryosull\TestingPain\Legibility\Model\OwnerFinder;
 use Barryosull\TestingPain\Legibility\Model\ShopFinder;
 use Barryosull\TestingPain\Legibility\Service\ApiClient;
 use Barryosull\TestingPain\Legibility\Service\OnboardingService;
+use Barryosull\TestingPainTests\Legibility\Api;
 use Barryosull\TestingPainTests\Legibility\Request\FakeSynchronousApiClient;
+use Barryosull\TestingPainTests\Legibility\TestingConfig;
+use Barryosull\TestingPainTests\Legibility\TestingSpyConstructorOverloader;
 use PHPUnit\Framework\TestCase;
 use Barryosull\TestingPain\Legibility\HTTP;
 
@@ -119,31 +122,31 @@ class IdentityTest extends TestCase {
             'state' => 'CA',
             'zip' => '94111',
             'country_id' => 209,
-            'phone' => '718-855-7955',
+            'phone' => '111-222-3333',
             'id' => '1234',
-            'full_id' => '98-765-1234',
+            'full_id' => '11-222-3333',
         ], $values);
     }
 
-    private function createBeneficialOwnerInput(array $values_per_owner = [[]]) {
+    private function createOwnerInput(array $values_per_owner = [[]]) {
         return array_map(function($values) {
             return array_merge([
-                'beneficial_owner_id' => null,
+                'owner_id' => null,
                 'birthday_month'      => 2,
                 'birthday_year'       => 1991,
                 'birthday_day'        => 20,
-                'name'                => 'Beneficial Doe',
+                'name'                => 'Owner Doe',
                 'last_four_id'       => '2222',
                 'primary'             => true,
                 'relationship'        => 'owner',
                 'address'             => [
-                    'name' => 'Beneficial Doe',
+                    'name' => 'Owner Doe',
                     'first_line' => '22 California St',
                     'city' => 'San Francisco',
                     'state' => 'CA',
                     'zip' => '94111',
                     'country_id' => 209,
-                    'phone' => '718-855-7955',
+                    'phone' => '111-222-3333',
                 ]
             ], $values);
         }, $values_per_owner);
@@ -158,11 +161,11 @@ class IdentityTest extends TestCase {
                 'state' => 'CA',
                 'zip' => '94111',
                 'country_id' => 209,
-                'phone' => '718-855-7955',
+                'phone' => '111-222-3333',
             ],
             'business_registration_number' => '123456789',
             'jurisdiction' => 'CA',
-            'taxpayer_id' => '13-5633531'
+            'id' => '11-2222222'
         ], $values);
     }
 
@@ -182,7 +185,7 @@ class IdentityTest extends TestCase {
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput([
                     'address' => [
                         'name' => 'Shop Business Address',
@@ -191,24 +194,24 @@ class IdentityTest extends TestCase {
                         'state' => 'CA',
                         'zip' => '94111',
                         'country_id' => 209,
-                        'phone' => '718-855-7955',
+                        'phone' => '111-222-3333',
                     ],
                     'business_registration_number' => '123456789',
                     'jurisdiction' => null,
-                    'taxpayer_id' => '13-5633531',
+                    'id' => '11-2222222',
                 ]),
             ])
         );
     }
 
-    public function test400BadRequestIfCountryRequiresTaxpayerIdButNotProvided() {
+    public function test400BadRequestIfCountryRequiresIdButNotProvided() {
         $this->expectException(HTTP\BadRequestError::class);
         Api::callShop(
             self::BUSINESS_SHOP_ID,
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput([
                     'address' => [
                         'name' => 'Shop Business Address',
@@ -217,11 +220,11 @@ class IdentityTest extends TestCase {
                         'state' => 'CA',
                         'zip' => '94111',
                         'country_id' => 209,
-                        'phone' => '718-855-7955',
+                        'phone' => '111-222-3333',
                     ],
                     'business_registration_number' => '123456789',
                     'jurisdiction' => 'CA',
-                    'taxpayer_id' => null,
+                    'id' => null,
                 ]),
             ])
         );
@@ -260,10 +263,10 @@ class IdentityTest extends TestCase {
         $this->configureIfIDsAreRequired($are_ids_required = false);
         TestingConfig::disableFeature("address_confirm");
 
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->never())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->never())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         Api::callShop(
             self::INDIVIDUAL_SHOP_ID,
@@ -295,10 +298,10 @@ class IdentityTest extends TestCase {
     public function test_200OKSetsCorrectIdentityDetailsForIndividual_individualIdRequired() {
         $this->configureIfIDsAreRequired($are_ids_required = true);
 
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->once())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->once())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         Api::callShop(
             self::INDIVIDUAL_SHOP_ID,
@@ -328,17 +331,17 @@ class IdentityTest extends TestCase {
     }
 
     public function test_200OKSetsCorrectBusinessIdentityDetailsForBusiness() {
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->once())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->once())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         Api::callShop(
             self::BUSINESS_SHOP_ID,
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput(),
             ])
         );
@@ -375,10 +378,10 @@ class IdentityTest extends TestCase {
     }
 
     public function test_200OKSetsCorrectBusinessIdentityDetailsForNonUSBusiness() {
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->never())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->never())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         $business_identity = [
             'address' => [
@@ -399,7 +402,7 @@ class IdentityTest extends TestCase {
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput($business_identity),
             ])
         );
@@ -438,17 +441,17 @@ class IdentityTest extends TestCase {
     public function test_400BadRequestWhenInvalidBusinessAndBankCountryIDUsed() {
         $this->expectException(HTTP\BadRequestError::class);
 
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->never())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->never())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         Api::callShop(
             self::BUSINESS_SHOP_ID,
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput(),
                 'country_id' => self::UNSUPPORTED_BUSINESS_COUNTRY_ID,
             ])
@@ -458,17 +461,17 @@ class IdentityTest extends TestCase {
     public function test_200OkDoesNotOverwriteAddressOnQuestionsAnswered() {
         TestingConfig::enableFeature('address_confirm');
 
-        $create_tax_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
-        $create_tax_identity_command->expects($this->once())
+        $create_identity_command = $this->createMock(CreateIdentityForCurrentYear::class);
+        $create_identity_command->expects($this->once())
             ->method('run');
-        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_tax_identity_command);
+        $this->spy->overload(CreateIdentityForCurrentYear::class, $create_identity_command);
 
         Api::callShop(
             self::BUSINESS_SHOP_ID,
             IdentityController::class,
             $this->createInput([
                 'is_business' => true,
-                'owners' => $this->createBeneficialOwnerInput(),
+                'owners' => $this->createOwnerInput(),
                 'business_identity' => $this->createBusinessIdentityInput(),
             ])
         );
