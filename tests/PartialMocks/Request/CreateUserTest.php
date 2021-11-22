@@ -10,23 +10,22 @@ use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
+    private $name = 'Test User';
+    private $email = 'test@email.com';
+    private $user_id = 1;
+
     /**
      * @test
      */
-    public function adapts_request_for_service()
+    public function makes_request_for_service()
     {
-        $name = 'Test User';
-        $dob = new DateTime('1994-10-10');
-        $email = 'test@email.com';
-        $tshirt_size = 's';
+        $request = $this->makeRequest();
 
-        $expected_request = $this->makeExpectedServiceRequest($name, $email);
+        $service_request = $request->makeServiceRequest();
 
-        $request = new CreateUser($name, $dob, $email, $tshirt_size);
+        $expected_request = $this->makeExpectedServiceRequest();
 
-        $adapted_request = $request->makeServiceRequest();
-
-        $this->assertEquals($expected_request, $adapted_request);
+        $this->assertEquals($expected_request, $service_request);
     }
 
     /**
@@ -34,43 +33,47 @@ class CreateUserTest extends TestCase
      */
     public function adapts_response_from_service()
     {
-        $user_id = 1;
+        $request = $this->makeRequest();
 
-        $request = new CreateUser('', new DateTime(), '', '');
-
-        $service_response = $this->makeServiceResponse($user_id);
+        $service_response = $this->makeServiceResponse();
 
         $response = $request->adaptResponse($service_response);
 
-        $expected_response = $this->makeExpectedResponse($user_id);
+        $expected_response = $this->makeExpectedResponse();
 
         $this->assertEquals($expected_response, $response);
     }
 
-    private function makeExpectedServiceRequest(string $name, string $email): array
+    private function makeRequest(): CreateUser {
+        $dob = new DateTime('1994-10-10');
+        $tshirt_size = 's';
+        return new CreateUser($this->name, $dob, $this->email, $tshirt_size);
+    }
+
+    private function makeExpectedServiceRequest(): array
     {
         $expected_dob = '10/10/1994';
         $expected_tshirt_size = 1;
         return [
-            'name' => $name,
+            'name' => $this->name,
             'dob' => $expected_dob,
-            'email' => $email,
+            'email' => $this->email,
             'tshirt_size' => $expected_tshirt_size,
         ];
     }
 
-    private function makeServiceResponse(int $user_id): array
+    private function makeServiceResponse(): array
     {
         return [
             'status' => 200,
             'data' => [
-                'entity_id' => $user_id,
+                'entity_id' => $this->user_id,
             ]
         ];
     }
 
-    private function makeExpectedResponse(int $user_id): array
+    private function makeExpectedResponse(): array
     {
-        return ['user_id' => $user_id];
+        return ['user_id' => $this->user_id];
     }
 }
