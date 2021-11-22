@@ -17,8 +17,8 @@ use Barryosull\TestingPain\Legibility\Service\ApiClient;
 use Barryosull\TestingPain\Legibility\Service\OnboardingService;
 use Barryosull\TestingPain\Legibility\HTTP;
 
-class IdentityTest extends TestCase {
-
+class IdentityTest extends TestCase
+{
     const INDIVIDUAL_SHOP_ID = 1;
     const BUSINESS_SHOP_ID = 2;
 
@@ -29,16 +29,16 @@ class IdentityTest extends TestCase {
 
     const UNSUPPORTED_BUSINESS_COUNTRY_ID = 212;
 
-    private $onboarding_helper;
-    private $gci_api_client;
+    private $onboarding_service;
+    private $api_client;
     private $create_identity_command;
 
     public function setUp() : void
     {
         parent::setUp();
 
-        $this->onboarding_helper = $this->makeOnboardingService();
-        $this->gci_api_client = $this->makeApiClient();
+        $this->onboarding_service = $this->makeOnboardingService();
+        $this->api_client = $this->makeApiClient();
         $this->create_identity_command = $this->makeCreateIdentityForCurrentYearCommand();
 
         $this->givenShopsExist();
@@ -154,7 +154,7 @@ class IdentityTest extends TestCase {
         $this->verifyOwnersWereAdded(self::BUSINESS_SHOP_ID);
     }
 
-    public function test_200_doesNotOverwriteAddressOnQuestionsAnswered()
+    public function test_200_PersonsNotOverwriteAddressOnQuestionsAnswered()
     {
         $http_input = $this->makeHttpInputArrayForBusiness();
 
@@ -181,8 +181,8 @@ class IdentityTest extends TestCase {
     {
         $spy = new TestingSpyConstructorOverloader();
 
-        $spy->overload(OnboardingService::class, $this->onboarding_helper);
-        $spy->overload(ApiClient::class, $this->gci_api_client, false);
+        $spy->overload(OnboardingService::class, $this->onboarding_service);
+        $spy->overload(ApiClient::class, $this->api_client, false);
         $spy->overload(CreateIdentityForCurrentYear::class, $this->create_identity_command);
 
         Api::callShop($shop_id, IdentityController::class, $http_input_array);
@@ -199,11 +199,11 @@ class IdentityTest extends TestCase {
     {
         return array_merge([
             'firstname' => 'Owner',
-            'last_name' => 'Doe',
+            'last_name' => 'Person',
             'day' => 10,
             'month' => 5,
             'year' => 1991,
-            'street_name' => 'California St',
+            'street_name' => ' St',
             'street_number' => '11',
             'city' => 'San Francisco',
             'state' => 'CA',
@@ -223,13 +223,13 @@ class IdentityTest extends TestCase {
                 'birthday_month'      => 2,
                 'birthday_year'       => 1991,
                 'birthday_day'        => 20,
-                'name'                => 'Owner Doe',
+                'name'                => 'Owner Person',
                 'last_four_id'       => '2222',
                 'primary'             => true,
                 'relationship'        => 'owner',
                 'address'             => [
-                    'name' => 'Owner Doe',
-                    'first_line' => '22 California St',
+                    'name' => 'Owner Person',
+                    'first_line' => '22  St',
                     'city' => 'San Francisco',
                     'state' => 'CA',
                     'zip' => '94111',
@@ -245,7 +245,7 @@ class IdentityTest extends TestCase {
         return array_merge([
             'address' => [
                 'name' => 'Shop Business Address',
-                'first_line' => '33 California St',
+                'first_line' => '33  St',
                 'city' => 'San Francisco',
                 'state' => 'CA',
                 'zip' => '94111',
@@ -412,15 +412,15 @@ class IdentityTest extends TestCase {
 
     private function givenInputAndIdentityAreValid(): void
     {
-        $this->onboarding_helper->method('validateAddress')
+        $this->onboarding_service->method('validateAddress')
             ->willReturn([true, null]);
-        $this->onboarding_helper->method('validateOnboardingEligibility')
+        $this->onboarding_service->method('validateOnboardingEligibility')
             ->willReturn(true);
-        $this->onboarding_helper->method('verifyIdentity')
+        $this->onboarding_service->method('verifyIdentity')
             ->willReturn([
                 'result_code' => 'PASS',
             ]);
-        $this->onboarding_helper->method('submitPromptAnswers')
+        $this->onboarding_service->method('submitPromptAnswers')
             ->willReturn(true);
     }
 
@@ -497,8 +497,8 @@ class IdentityTest extends TestCase {
     {
         $shop = $this->getShop($shop_id);
         $address = $shop->address();
-        $this->assertEquals('11 California St', $address['first_line'], 'Shop address uses the individual identity');
-        $this->assertEquals('Owner Doe', $address['name'], 'Shop address uses the individual identity');
+        $this->assertEquals('11  St', $address['first_line'], 'Shop address uses the individual identity');
+        $this->assertEquals('Owner Person', $address['name'], 'Shop address uses the individual identity');
     }
 
     private function verifyShopIsBusiness(int $shop_id): void
@@ -511,14 +511,14 @@ class IdentityTest extends TestCase {
     {
         $shop = $this->getShop($shop_id);
         $address = $shop->address();
-        $this->assertEquals('33 California St', $address['first_line'], 'Shop address uses the business identity');
+        $this->assertEquals('33  St', $address['first_line'], 'Shop address uses the business identity');
         $this->assertEquals('Shop Business Address', $address['name'], 'Shop address uses the business identity');
     }
 
     private function verifyOwnersWereAdded(int $shop_id): void
     {
         $owner_names = $this->getOwnerNames($shop_id);
-        $expected_owner_names = [['owner' => 'Owner Doe']];
+        $expected_owner_names = [['owner' => 'Owner Person']];
         $this->assertEqualsCanonicalizing($expected_owner_names, $owner_names, 'Owners should have been added');
     }
 
