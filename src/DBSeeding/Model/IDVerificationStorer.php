@@ -22,7 +22,8 @@ class IDVerificationStorer
         $this->updateUi($id_verification);
     }
 
-    private function updateUi(IDVerification $id_verification) {
+    private function updateUi(IDVerification $id_verification)
+    {
         $shop = $this->shop_finder->find($id_verification->shop_id);
 
         $card = $this->card_factory->makeVerificationFailedCard($shop->shop_id);
