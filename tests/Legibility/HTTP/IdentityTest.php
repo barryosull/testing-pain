@@ -9,6 +9,7 @@ use Barryosull\TestingPain\Legibility\Model\ShopFinder;
 use Barryosull\TestingPain\Legibility\Service\ApiClient;
 use Barryosull\TestingPain\Legibility\Service\OnboardingService;
 use Barryosull\TestingPainTests\Legibility\Api;
+use Barryosull\TestingPainTests\Legibility\DbSeeder;
 use Barryosull\TestingPainTests\Legibility\Request\FakeSynchronousApiClient;
 use Barryosull\TestingPainTests\Legibility\TestingConfig;
 use Barryosull\TestingPainTests\Legibility\TestingSpyConstructorOverloader;
@@ -26,7 +27,7 @@ class IdentityTest extends TestCase {
         self::BUSINESS_SHOP_ID => 'BusinessShop',
     ];
 
-    public function getArrayConfigs() {
+    public function seedData() {
         $config = [
             'shops' => [],
             'users' => [],
@@ -55,11 +56,13 @@ class IdentityTest extends TestCase {
             ]);
         }
 
-        return $config;
+        DbSeeder::seed($config);
     }
 
     public function setUp() : void {
         parent::setUp();
+
+        $this->seedData();
 
         TestingConfig::enableFeature('address_confirm');
         TestingConfig::setFeatureData('address_confirm', [

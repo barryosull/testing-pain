@@ -2,13 +2,15 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class ActiveRecordBaseModel {
-
-    public function store() {
+class ActiveRecordBaseModel
+{
+    public function store()
+    {
 
     }
 
-    public function recordStored($dirtyData = null) {
+    public function recordStored($dirtyData = null)
+    {
 
     }
 }

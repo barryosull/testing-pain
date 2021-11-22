@@ -2,8 +2,8 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class AdvisoryCardFinder {
-
+class AdvisoryCardFinder
+{
     /**
      * @return AdvisoryCard[]
      */
