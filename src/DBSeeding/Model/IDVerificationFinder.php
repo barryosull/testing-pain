@@ -2,9 +2,10 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class IDVerificationFinder {
-
-    public function find(int $shop_id): ?IDVerification {
+class IDVerificationFinder
+{
+    public function find(int $shop_id): ?IDVerification
+    {
         return null;
     }
 }

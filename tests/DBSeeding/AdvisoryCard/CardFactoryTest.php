@@ -10,10 +10,10 @@ use PHPUnit\Framework\TestCase;
 class CardFactoryTest extends TestCase
 {
     /**
-     * @test
      * @dataProvider provideShopsToCards
      */
-    public function makes_card(int $shop_id, string $expected_class) {
+    public function test_makes_card(int $shop_id, string $expected_class)
+    {
         $factory = new CardFactory();
         $card = $factory->makeVerificationFailedCard($shop_id);
         $this->assertInstanceOf($expected_class, $card);

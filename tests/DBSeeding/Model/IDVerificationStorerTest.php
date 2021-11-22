@@ -37,9 +37,6 @@ class IDVerificationStorerTest extends TestCase
     // Testcases
     //*********************************
 
-    /**
-     * @test
-     */
     public function stores_id_verification()
     {
         $this->givenShopExists();
@@ -49,9 +46,6 @@ class IDVerificationStorerTest extends TestCase
         $this->storer->store($id_verification);
     }
 
-    /**
-     * @test
-     */
     public function creates_failure_card_on_failed_verification()
     {
         $shop = $this->givenShopExists();
@@ -61,9 +55,6 @@ class IDVerificationStorerTest extends TestCase
         $this->storer->store($id_verification);
     }
 
-    /**
-     * @test
-     */
     public function addresses_failure_card_on_verified_verification()
     {
         $shop = $this->givenShopExists();

@@ -4,8 +4,8 @@ namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
 
 use Barryosull\TestingPain\DBSeeding\Model\Shop;
 
-class IDVerificationFailedWarning implements Card {
-
+class IDVerificationFailedWarning implements Card
+{
     public function createForShop(Shop $shop)
     {
 
