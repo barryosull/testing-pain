@@ -19,22 +19,6 @@ class CreateUser implements Request
         $this->tshirt_size = $tshirt_size;
     }
 
-    private function formatDob(DateTime $dob): string
-    {
-        return  $dob->format('d/m/Y');
-    }
-
-    private function formatTshirtSize(string $size): int
-    {
-        if ($size === 's') {
-            return 1;
-        }
-        if ($size === 'm') {
-            return 2;
-        }
-        return 3;
-    }
-
     public function partialUri(): string
     {
         return '/user/';
@@ -53,6 +37,22 @@ class CreateUser implements Request
             'email' => $this->email,
             'tshirt_size' => $this->formatTshirtSize($this->tshirt_size)
         ];
+    }
+
+    private function formatDob(DateTime $dob): string
+    {
+        return  $dob->format('d/m/Y');
+    }
+
+    private function formatTshirtSize(string $size): int
+    {
+        if ($size === 's') {
+            return 1;
+        }
+        if ($size === 'm') {
+            return 2;
+        }
+        return 3;
     }
 
     public function adaptResponse(array $response): array

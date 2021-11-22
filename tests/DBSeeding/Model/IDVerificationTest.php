@@ -6,8 +6,8 @@ use Barryosull\TestingPain\DBSeeding\Model;
 use Barryosull\TestingPain\DBSeeding\Model\IDVerificationStatus;
 use PHPUnit\Framework\TestCase;
 
-class IDVerificationTest extends TestCase {
-
+class IDVerificationTest extends TestCase
+{
     /** @var Model\IDVerificationFinder */
     private $finder;
 
@@ -26,7 +26,8 @@ class IDVerificationTest extends TestCase {
         $this->shop_finder = new Model\ShopFinder();
     }
 
-    public function getDBSeedData(): array {
+    public function getDBSeedData(): array
+    {
         return [
             'shops' => [
                 [
@@ -86,7 +87,8 @@ class IDVerificationTest extends TestCase {
         ];
     }
 
-    public function test_recordStored() {
+    public function test_recordStored()
+    {
         $shop = $this->shop_finder->find(self::SHOP_ID);
         $id_verification = $this->finder->find(self::SHOP_ID, 1);
 
@@ -123,7 +125,8 @@ class IDVerificationTest extends TestCase {
         $this->assertEquals(2, $this->fetchDisplayableCards($shop)[0]->occurrence);
     }
 
-    private function fetchDisplayableCards($shop): array {
+    private function fetchDisplayableCards($shop): array
+    {
         $advisory_card_finder = new Model\AdvisoryCardFinder();
         return $advisory_card_finder->findDisplayableForShop($shop);
     }

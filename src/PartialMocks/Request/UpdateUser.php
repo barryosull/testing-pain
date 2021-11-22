@@ -4,17 +4,50 @@ namespace Barryosull\TestingPain\PartialMocks\Request;
 
 use DateTime;
 
-class UpdateUser extends AbstractRequest
+class UpdateUser implements Request
 {
-    protected $method = 'PUT';
-    protected $partial_uri = '/user/';
+    private $user_id;
+    private $name;
+    private $dob;
+    private $email;
+    private $tshirt_size;
 
-    protected function formatDob(DateTime $dob): string
+    public function __construct(int $user_id, string $name, DateTime $dob, string $email, string $tshirt_size)
+    {
+        $this->user_id = $user_id;
+        $this->name = $name;
+        $this->dob = $dob;
+        $this->email = $email;
+        $this->tshirt_size = $tshirt_size;
+    }
+
+    public function partialUri(): string
+    {
+        return '/user/';
+    }
+
+    public function httpMethod(): string
+    {
+        return 'PUT';
+    }
+
+    public function makeServiceRequest(): array
+    {
+        return [
+            'entity_id' => $this->user_id,
+            'name' => $this->name,
+            'dob' => $this->formatDob($this->dob),
+            'email' => $this->email,
+            'tshirt_size' => $this->formatTshirtSize($this->tshirt_size)
+        ];
+    }
+
+    private function formatDob(DateTime $dob): string
     {
         return  $dob->format('d/m/Y');
     }
 
-    protected function formatTshirtSize(string $size): int
+    private function formatTshirtSize(string $size): int
     {
         if ($size === 's') {
             return 1;
@@ -25,10 +58,10 @@ class UpdateUser extends AbstractRequest
         return 3;
     }
 
-    protected function formatResponse(array $response): array
+    public function adaptResponse(array $service_response): array
     {
         return [
-            'user_id' => $response['data']['entity_id']
+            'user_id' => $service_response['data']['entity_id']
         ];
     }
 }

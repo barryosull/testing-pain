@@ -21,10 +21,7 @@ class RequesterTest extends TestCase
         $this->requester = new Requester($this->http_client);
     }
 
-    /**
-     * @test
-     */
-    public function sends_request_and_parses_result()
+    public function test_sends_request_and_parses_result()
     {
         $request = $this->createMock(Request::class);
 

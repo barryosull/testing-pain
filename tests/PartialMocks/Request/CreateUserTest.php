@@ -3,8 +3,6 @@
 namespace Barryosull\TestingPainTests\PartialMocks\Request;
 
 use Barryosull\TestingPain\PartialMocks\Request\CreateUser;
-use Barryosull\TestingPain\PartialMocks\Request\HttpClient;
-use Barryosull\TestingPain\PartialMocks\Request\Requester;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +12,7 @@ class CreateUserTest extends TestCase
     private $email = 'test@email.com';
     private $user_id = 1;
 
-    /**
-     * @test
-     */
-    public function makes_request_for_service()
+    public function test_makes_request_for_service()
     {
         $request = $this->makeRequest();
 
@@ -28,10 +23,7 @@ class CreateUserTest extends TestCase
         $this->assertEquals($expected_request, $service_request);
     }
 
-    /**
-     * @test
-     */
-    public function adapts_response_from_service()
+    public function test_adapts_response_from_service()
     {
         $request = $this->makeRequest();
 
@@ -44,7 +36,8 @@ class CreateUserTest extends TestCase
         $this->assertEquals($expected_response, $response);
     }
 
-    private function makeRequest(): CreateUser {
+    private function makeRequest(): CreateUser
+    {
         $dob = new DateTime('1994-10-10');
         $tshirt_size = 's';
         return new CreateUser($this->name, $dob, $this->email, $tshirt_size);

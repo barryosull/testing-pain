@@ -2,6 +2,7 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class AdvisoryCard {
+class AdvisoryCard
+{
 
 }

@@ -8,51 +8,67 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateUserTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function sends_request_and_parses_result()
+    private $name = 'Test User';
+    private $email = 'test@email.com';
+    private $user_id = 1;
+
+    public function test_makes_request_for_service()
     {
-        $method = 'PUT';
-        $partial_uri = '/user/';
-        $update_user_request = $this->createPartialMock(UpdateUser::class, ['getCredentials', 'makeCall']);
+        $request = $this->makeRequest();
 
-        $credentials = ['username' => 'test', 'password' => 'password'];
+        $service_request = $request->makeServiceRequest();
 
-        $update_user_request->method('getCredentials')
-            ->willReturn($credentials);
+        $expected_request = $this->makeExpectedServiceRequest();
 
-        $api_data = [
-            'user_id' => 1,
-            'name' => 'Test User2',
-            'dob' => '10/10/1993',
-            'email' => 'test@email2.com',
-            'tshirt_size' => 2
+        $this->assertEquals($expected_request, $service_request);
+    }
+
+    public function test_adapts_response_from_service()
+    {
+        $request = $this->makeRequest();
+
+        $service_response = $this->makeServiceResponse();
+
+        $response = $request->adaptResponse($service_response);
+
+        $expected_response = $this->makeExpectedResponse();
+
+        $this->assertEquals($expected_response, $response);
+    }
+
+    private function makeRequest(): UpdateUser
+    {
+        $dob = new DateTime('1994-10-10');
+        $tshirt_size = 's';
+        return new UpdateUser($this->user_id, $this->name, $dob, $this->email, $tshirt_size);
+    }
+
+    private function makeExpectedServiceRequest(): array
+    {
+        $expected_dob = '10/10/1994';
+        $expected_tshirt_size = 1;
+        return [
+            'entity_id' => 1,
+            'name' => $this->name,
+            'dob' => $expected_dob,
+            'email' => $this->email,
+            'tshirt_size' => $expected_tshirt_size,
         ];
+    }
 
-        $response = [
+    private function makeServiceResponse(): array
+    {
+        return [
             'status' => 200,
             'data' => [
-                'entity_id' => 1,
+                'entity_id' => $this->user_id,
             ]
         ];
+    }
 
-        $update_user_request->method('makeCall')
-            ->with($method, $partial_uri, $api_data, $credentials)
-            ->willReturn($response);
-
-        $dob = new DateTime('1993-10-10');
-
-        $update_user_request->set('user_id', 1);
-        $update_user_request->set('name', 'Test User2');
-        $update_user_request->set('dob', $dob);
-        $update_user_request->set('email', 'test@email2.com');
-        $update_user_request->set('tshirt_size', 'm');
-
-        $result = $update_user_request->send();
-
-        $expected_result = ['user_id' => 1];
-
-        $this->assertEquals($expected_result, $result);
+    private function makeExpectedResponse(): array
+    {
+        return ['user_id' => $this->user_id];
     }
 }
+
