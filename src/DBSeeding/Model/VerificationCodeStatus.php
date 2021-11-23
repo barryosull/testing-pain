@@ -2,7 +2,7 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class IDVerificationStatus
+class VerificationCodeStatus
 {
     const VERIFIED = 'verified';
     const FAILED = 'failed';

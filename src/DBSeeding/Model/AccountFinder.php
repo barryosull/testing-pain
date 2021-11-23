@@ -2,9 +2,9 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class ShopFinder
+class AccountFinder
 {
-    public function find(int $shop_id): ?Shop
+    public function find(int $account_id): ?Account
     {
         return null;
     }
