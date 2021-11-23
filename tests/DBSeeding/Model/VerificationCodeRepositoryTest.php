@@ -6,12 +6,12 @@ use Barryosull\TestingPain\DBSeeding\AdvisoryCard\Card;
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\CardFactory;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationStatus;
-use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeStorer;
+use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeRepository;
 use Barryosull\TestingPain\DBSeeding\Model\Account;
 use Barryosull\TestingPain\DBSeeding\Model\AccountFinder;
 use PHPUnit\Framework\TestCase;
 
-class VerificationCodeStorerTest extends TestCase
+class VerificationCodeRepositoryTest extends TestCase
 {
     const ACCOUNT_ID = 1;
 
@@ -29,7 +29,7 @@ class VerificationCodeStorerTest extends TestCase
         $this->account_finder = $this->createMock(AccountFinder::class);
         $this->card_factory = $this->createMock(CardFactory::class);
 
-        $this->storer = new VerificationCodeStorer($this->account_finder, $this->card_factory);
+        $this->storer = new VerificationCodeRepository($this->account_finder, $this->card_factory);
     }
 
 

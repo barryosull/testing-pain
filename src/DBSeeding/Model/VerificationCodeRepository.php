@@ -4,7 +4,7 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
 
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\CardFactory;
 
-class VerificationCodeStorer
+class VerificationCodeRepository
 {
     private $account_finder;
     private $card_factory;
@@ -33,5 +33,11 @@ class VerificationCodeStorer
         } else {
             $card->markAsAddressed($account);
         }
+    }
+
+    public function find(int $account_id): ?VerificationCode
+    {
+        // details omitted
+        return null;
     }
 }
