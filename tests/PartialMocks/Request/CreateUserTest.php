@@ -14,26 +14,33 @@ class CreateUserTest extends TestCase
 
     public function test_makes_request_for_service()
     {
-        $request = $this->makeRequest();
-
-        $service_request = $request->makeServiceRequest();
-
         $expected_request = $this->makeExpectedServiceRequest();
+
+        $service_request = $this->whenServiceRequestIsMade();
 
         $this->assertEquals($expected_request, $service_request);
     }
 
     public function test_adapts_response_from_service()
     {
-        $request = $this->makeRequest();
-
-        $service_response = $this->makeServiceResponse();
-
-        $response = $request->adaptResponse($service_response);
+        $response = $this->whenResponseIsAdapted();
 
         $expected_response = $this->makeExpectedResponse();
 
         $this->assertEquals($expected_response, $response);
+    }
+
+    private function whenServiceRequestIsMade(): array
+    {
+        $request = $this->makeRequest();
+        return $request->makeServiceRequest();
+    }
+
+    private function whenResponseIsAdapted(): array
+    {
+        $request = $this->makeRequest();
+        $service_response = $this->makeServiceResponse();
+        return $request->adaptResponse($service_response);
     }
 
     private function makeRequest(): CreateUser
