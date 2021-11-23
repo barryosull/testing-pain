@@ -7,7 +7,7 @@ class AdvisoryCardFinder
     /**
      * @return AdvisoryCard[]
      */
-    public function findDisplayableForShop(Shop $shop): array
+    public function findDisplayableForShop(Account $account): array
     {
         return [];
     }

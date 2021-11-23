@@ -2,10 +2,8 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-/**
- * @property int $shop_id
- */
-class Shop
+class VerificationStatus
 {
-    public $shop_id;
+    const VERIFIED = 'verified';
+    const FAILED = 'failed';
 }

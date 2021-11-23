@@ -2,11 +2,11 @@
 
 namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
 
-use Barryosull\TestingPain\DBSeeding\Model\Shop;
+use Barryosull\TestingPain\DBSeeding\Model\Account;
 
 interface Card
 {
-    public function createForShop(Shop $shop);
+    public function createForAccount(Account $account);
 
-    public function markAsAddressed(Shop $shop);
+    public function markAsAddressed(Account $account);
 }

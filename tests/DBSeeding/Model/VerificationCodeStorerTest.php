@@ -4,19 +4,19 @@ namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\Card;
 use Barryosull\TestingPain\DBSeeding\AdvisoryCard\CardFactory;
-use Barryosull\TestingPain\DBSeeding\Model\IDVerification;
-use Barryosull\TestingPain\DBSeeding\Model\IDVerificationStatus;
-use Barryosull\TestingPain\DBSeeding\Model\IDVerificationStorer;
-use Barryosull\TestingPain\DBSeeding\Model\Shop;
-use Barryosull\TestingPain\DBSeeding\Model\ShopFinder;
+use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
+use Barryosull\TestingPain\DBSeeding\Model\VerificationStatus;
+use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeStorer;
+use Barryosull\TestingPain\DBSeeding\Model\Account;
+use Barryosull\TestingPain\DBSeeding\Model\AccountFinder;
 use PHPUnit\Framework\TestCase;
 
-class IDVerificationStorerTest extends TestCase
+class VerificationCodeStorerTest extends TestCase
 {
-    const SHOP_ID = 1;
+    const ACCOUNT_ID = 1;
 
-    /** @var ShopFinder */
-    private $shop_finder;
+    /** @var AccountFinder */
+    private $account_finder;
     /** @var CardFactory */
     private $card_factory;
 
@@ -26,10 +26,10 @@ class IDVerificationStorerTest extends TestCase
     {
         parent::setUp();
 
-        $this->shop_finder = $this->createMock(ShopFinder::class);
+        $this->account_finder = $this->createMock(AccountFinder::class);
         $this->card_factory = $this->createMock(CardFactory::class);
 
-        $this->storer = new IDVerificationStorer($this->shop_finder, $this->card_factory);
+        $this->storer = new VerificationCodeStorer($this->account_finder, $this->card_factory);
     }
 
 
@@ -40,7 +40,7 @@ class IDVerificationStorerTest extends TestCase
     public function test_stores_id_verification()
     {
         $this->givenShopExists();
-        $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::VERIFIED);
+        $id_verification = $this->makeVerificationWithStatus(VerificationStatus::VERIFIED);
         $this->expectVerificationToBeStored($id_verification);
 
         $this->storer->store($id_verification);
@@ -48,18 +48,18 @@ class IDVerificationStorerTest extends TestCase
 
     public function test_creates_failure_card_on_failed_verification()
     {
-        $shop = $this->givenShopExists();
-        $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::FAILED);
-        $this->expectCardToBeCreatedForShop($shop);
+        $account = $this->givenShopExists();
+        $id_verification = $this->makeVerificationWithStatus(VerificationStatus::FAILED);
+        $this->expectCardToBeCreatedForShop($account);
 
         $this->storer->store($id_verification);
     }
 
     public function test_addresses_failure_card_on_verified_verification()
     {
-        $shop = $this->givenShopExists();
-        $id_verification = $this->makeVerificationWithStatus(IDVerificationStatus::VERIFIED);
-        $this->expectCardToBeAddressedForShop($shop);
+        $account = $this->givenShopExists();
+        $id_verification = $this->makeVerificationWithStatus(VerificationStatus::VERIFIED);
+        $this->expectCardToBeAddressedForShop($account);
 
         $this->storer->store($id_verification);
     }
@@ -69,10 +69,10 @@ class IDVerificationStorerTest extends TestCase
     // Factories
     //*********************************
 
-    private function makeVerificationWithStatus(string $status): IDVerification
+    private function makeVerificationWithStatus(string $status): VerificationCode
     {
-        $verification = $this->createMock(IDVerification::class);
-        $verification->shop_id = self::SHOP_ID;
+        $verification = $this->createMock(VerificationCode::class);
+        $verification->account_id = self::ACCOUNT_ID;
         $verification->verification_status = $status;
         return $verification;
     }
@@ -82,13 +82,13 @@ class IDVerificationStorerTest extends TestCase
     // Given (fakes)
     //*********************************
 
-    private function givenShopExists(): Shop
+    private function givenShopExists(): Account
     {
-        $shop = $this->createMock(Shop::class);
-        $shop->shop_id = self::SHOP_ID;
-        $this->shop_finder->method('find')
-            ->willReturn($shop);
-        return $shop;
+        $account = $this->createMock(Account::class);
+        $account->account_id = self::ACCOUNT_ID;
+        $this->account_finder->method('find')
+            ->willReturn($account);
+        return $account;
     }
 
 
@@ -96,33 +96,33 @@ class IDVerificationStorerTest extends TestCase
     // Expectations (side effects)
     //*********************************
 
-    private function expectVerificationToBeStored(IDVerification $verification)
+    private function expectVerificationToBeStored(VerificationCode $verification)
     {
         $verification->expects($this->once())
             ->method('store');
     }
 
-    private function expectCardToBeCreatedForShop(Shop $shop)
+    private function expectCardToBeCreatedForShop(Account $account)
     {
         $card = $this->createMock(Card::class);
         $this->card_factory->method('makeVerificationFailedCard')
-            ->with($shop->shop_id)
+            ->with($account->account_id)
             ->willReturn($card);
 
         $card->expects($this->once())
-            ->method('createForShop')
-            ->with($shop);
+            ->method('createForAccount')
+            ->with($account);
     }
 
-    private function expectCardToBeAddressedForShop(Shop $shop)
+    private function expectCardToBeAddressedForShop(Account $account)
     {
         $card = $this->createMock(Card::class);
         $this->card_factory->method('makeVerificationFailedCard')
-            ->with($shop->shop_id)
+            ->with($account->account_id)
             ->willReturn($card);
 
         $card->expects($this->once())
             ->method('markAsAddressed')
-            ->with($shop);
+            ->with($account);
     }
 }

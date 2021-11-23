@@ -4,11 +4,11 @@ namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
 
 class CardFactory
 {
-    public function makeVerificationFailedCard(int $shop_id): Card
+    public function makeVerificationFailedCard(int $account_id): Card
     {
-        if ($shop_id % 2 === 0) {
-            return new IDVerificationFailedClosed();
+        if ($account_id % 2 === 0) {
+            return new VerificationFailedClosed();
         }
-        return new IDVerificationFailedWarning();
+        return new VerificationFailedWarning();
     }
 }
