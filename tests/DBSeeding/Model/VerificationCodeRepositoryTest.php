@@ -20,7 +20,7 @@ class VerificationCodeRepositoryTest extends TestCase
     /** @var CardFactory */
     private $card_factory;
 
-    private $storer;
+    private $repository;
 
     public function setUp(): void
     {
@@ -29,7 +29,7 @@ class VerificationCodeRepositoryTest extends TestCase
         $this->account_finder = $this->createMock(AccountFinder::class);
         $this->card_factory = $this->createMock(CardFactory::class);
 
-        $this->storer = new VerificationCodeRepository($this->account_finder, $this->card_factory);
+        $this->repository = new VerificationCodeRepository($this->account_finder, $this->card_factory);
     }
 
 
@@ -43,7 +43,7 @@ class VerificationCodeRepositoryTest extends TestCase
         $id_verification = $this->makeVerificationWithStatus(VerificationStatus::VERIFIED);
         $this->expectVerificationToBeStored($id_verification);
 
-        $this->storer->store($id_verification);
+        $this->repository->store($id_verification);
     }
 
     public function test_creates_failure_card_on_failed_verification()
@@ -52,7 +52,7 @@ class VerificationCodeRepositoryTest extends TestCase
         $id_verification = $this->makeVerificationWithStatus(VerificationStatus::FAILED);
         $this->expectCardToBeCreatedForShop($account);
 
-        $this->storer->store($id_verification);
+        $this->repository->store($id_verification);
     }
 
     public function test_addresses_failure_card_on_verified_verification()
@@ -61,7 +61,7 @@ class VerificationCodeRepositoryTest extends TestCase
         $id_verification = $this->makeVerificationWithStatus(VerificationStatus::VERIFIED);
         $this->expectCardToBeAddressedForShop($account);
 
-        $this->storer->store($id_verification);
+        $this->repository->store($id_verification);
     }
 
 
