@@ -9,7 +9,7 @@ class ActiveRecordBaseModel
 
     }
 
-    public function recordStored($dirtyData = null)
+    protected function recordStored($dirtyData = null)
     {
 
     }

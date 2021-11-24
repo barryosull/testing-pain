@@ -13,7 +13,7 @@ class VerificationCode extends ActiveRecordBaseModel
     public $account_id;
     public $verification_status;
 
-    public function recordStored($dirtyData = null) {
+    protected function recordStored($dirtyData = null) {
         parent::recordStored($dirtyData);
 
         $account = (new AccountFinder)->find($this->account_id);
