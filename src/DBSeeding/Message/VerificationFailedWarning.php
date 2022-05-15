@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
+namespace Barryosull\TestingPain\DBSeeding\Message;
 
 use Barryosull\TestingPain\DBSeeding\Model\Account;
 
-class VerificationFailedClosed implements Card
+class VerificationFailedWarning implements Message
 {
-    public function createForAccount(Account $account)
+    public function create(Account $account)
     {
 
     }

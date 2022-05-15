@@ -2,7 +2,7 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class AccountFinder
+class AccountRepository
 {
     public function find(int $account_id): ?Account
     {

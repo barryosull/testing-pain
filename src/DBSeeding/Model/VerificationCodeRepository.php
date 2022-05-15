@@ -2,17 +2,20 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-use Barryosull\TestingPain\DBSeeding\AdvisoryCard\CardFactory;
+use Barryosull\TestingPain\DBSeeding\Message\MessageFactory;
 
 class VerificationCodeRepository
 {
-    private $account_finder;
-    private $card_factory;
+    /** @var AccountRepository */
+    private $account_repository;
 
-    public function __construct(AccountFinder $account_finder, CardFactory $card_factory)
+    /** @var MessageFactory */
+    private $message_factory;
+
+    public function __construct(AccountRepository $account_repository, MessageFactory $message_factory)
     {
-        $this->account_finder = $account_finder;
-        $this->card_factory = $card_factory;
+        $this->account_repository = $account_repository;
+        $this->message_factory = $message_factory;
     }
 
     public function store(VerificationCode $verification_code): void
@@ -22,16 +25,16 @@ class VerificationCodeRepository
         $this->updateUi($verification_code);
     }
 
-    private function updateUi(VerificationCode $id_verification)
+    private function updateUi(VerificationCode $id_verification): void
     {
-        $account = $this->account_finder->find($id_verification->account_id);
+        $account = $this->account_repository->find($id_verification->account_id);
 
-        $card = $this->card_factory->makeVerificationFailedCard($account->account_id);
+        $message = $this->message_factory->makeVerificationFailedMessage($account->account_id);
 
         if ($id_verification->verification_status === VerificationStatus::FAILED) {
-            $card->createForAccount($account);
+            $message->create($account);
         } else {
-            $card->markAsAddressed($account);
+            $message->clear($account);
         }
     }
 

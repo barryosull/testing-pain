@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
+namespace Barryosull\TestingPain\DBSeeding\Message;
 
-class CardFactory
+class MessageFactory
 {
-    public function makeVerificationFailedCard(int $account_id): Card
+    public function makeVerificationFailedMessage(int $account_id): Message
     {
         if ($account_id % 2 === 0) {
             return new VerificationFailedClosed();
