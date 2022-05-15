@@ -73,6 +73,17 @@ class UpdateUserTest extends TestCase
         return ['user_id' => self::USER_ID];
     }
 
+    private function givenRequestIsPrepared(): void
+    {
+        $dob = new DateTime('1993-10-10');
+
+        $this->request->set('user_id', self::USER_ID);
+        $this->request->set('name', self::NAME);
+        $this->request->set('dob', $dob);
+        $this->request->set('email', self::NAME);
+        $this->request->set('tshirt_size', 'm');
+    }
+
     private function givenApiCallReturnsResponse(): void
     {
         $response = $this->makeExpectedApiResponse();
@@ -89,17 +100,6 @@ class UpdateUserTest extends TestCase
             ->willReturn($credentials);
 
         return $credentials;
-    }
-
-    private function givenRequestIsPrepared(): void
-    {
-        $dob = new DateTime('1993-10-10');
-
-        $this->request->set('user_id', self::USER_ID);
-        $this->request->set('name', self::NAME);
-        $this->request->set('dob', $dob);
-        $this->request->set('email', self::NAME);
-        $this->request->set('tshirt_size', 'm');
     }
 
     private function expectFormattedApiRequestIsSent()
