@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Barryosull\TestingPain\DBSeeding\AdvisoryCard;
+namespace Barryosull\TestingPain\DBSeeding\Message;
 
 use Barryosull\TestingPain\DBSeeding\Model\Account;
 

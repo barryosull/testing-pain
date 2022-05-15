@@ -2,12 +2,12 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class AdvisoryCardFinder
+class Message
 {
     /**
-     * @return AdvisoryCard[]
+     * @return Message[]
      */
-    public function findDisplayableForAccount(Account $account): array {
+    public static function findDisplayableForAccount(Account $account): array {
         return [];
     }
 }

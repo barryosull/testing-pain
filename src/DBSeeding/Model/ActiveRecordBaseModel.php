@@ -6,11 +6,11 @@ class ActiveRecordBaseModel
 {
     public function store()
     {
-
+        // details omitted ...
     }
 
     protected function recordStored($dirtyData = null)
     {
-
+        // details omitted ...
     }
 }

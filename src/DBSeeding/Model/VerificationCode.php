@@ -2,7 +2,7 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-use Barryosull\TestingPain\DBSeeding\AdvisoryCard\VerificationFailed;
+use Barryosull\TestingPain\DBSeeding\Message\VerificationFailed;
 
 /**
  * @property int $account_id
@@ -16,7 +16,7 @@ class VerificationCode extends ActiveRecordBaseModel
     protected function recordStored($dirtyData = null) {
         parent::recordStored($dirtyData);
 
-        $account = (new AccountFinder)->find($this->account_id);
+        $account = Account::find($this->account_id);
 
         $verification_failure_card = new VerificationFailed();
 
@@ -25,5 +25,11 @@ class VerificationCode extends ActiveRecordBaseModel
         } else {
             $verification_failure_card->markAsAddressed($account);
         }
+    }
+
+    public static function find(int $account_id): ?VerificationCode
+    {
+        // details omitted
+        return null;
     }
 }

@@ -3,30 +3,19 @@
 namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
 use Barryosull\TestingPain\DBSeeding\Model;
+use Barryosull\TestingPain\DBSeeding\Model\Account;
+use Barryosull\TestingPain\DBSeeding\Model\Message;
+use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeStatus;
 use PHPUnit\Framework\TestCase;
 
 class VerificationCodeTest extends TestCase
 {
-    /** @var Model\VerificationCodeFinder */
-    private $finder;
-
-    /** @var Model\AccountFinder */
-    private $account_finder;
-
     CONST ACCOUNT_ID = 1;
     CONST CODE = 1111;
     CONST CODE_2 = 2222;
     CONST VERIFICATION_LAST_CHECKED_AT = 1919191919;
     CONST UPDATE_DATE = 1609000000;
-
-
-    public function setUp() : void
-    {
-        parent::setUp();
-        $this->finder = new Model\VerificationCodeFinder();
-        $this->account_finder = new Model\AccountFinder();
-    }
 
     public function getDBSeedData(): array
     {
@@ -57,11 +46,11 @@ class VerificationCodeTest extends TestCase
                     'update_date' => self::UPDATE_DATE + 1,
                 ]
             ],
-            'advisory_card' => [
+            'message' => [
                 [
-                    'advisory_card_id' =>  1,
-                    'next_advisory_card_id' =>  null,
-                    'next_advisory_card_delay' =>  0,
+                    'message_id' =>  1,
+                    'next_message_id' =>  null,
+                    'next_message_delay' =>  0,
                     'segment_data_url' =>  '',
                     'segment_description' =>  '',
                     'title' =>  'You are not verified',
@@ -90,45 +79,44 @@ class VerificationCodeTest extends TestCase
 
     public function test_recordStored()
     {
-        $account = $this->account_finder->find(self::ACCOUNT_ID);
-        $verification_code = $this->finder->find(self::ACCOUNT_ID);
+        $account = Account::find(self::ACCOUNT_ID);
+        $verification_code = VerificationCode::find(self::ACCOUNT_ID);
 
-        $this->assertEquals(0, count($this->fetchDisplayableCards($account)));
+        $this->assertEquals(0, count($this->findDisplayedMessages($account)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
-        // We just saved a failed ID, so should have 1 card with 1 occurrence
-        $this->assertEquals(1, count($this->fetchDisplayableCards($account)));
-        $this->assertEquals(1, $this->fetchDisplayableCards($account)[0]->occurrence);
+        // We just saved a failed ID, so should have 1 message with 1 occurrence
+        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
+        $this->assertEquals(1, $this->findDisplayedMessages($account)[0]->occurrence);
 
         $verification_code->store();
 
-        // Current card hasn't been addressed (it's still displayed) so a new occurrence shouldn't be created,
-        // but we should still have 1 displayable card
-        $this->assertEquals(1, count($this->fetchDisplayableCards($account)));
-        $this->assertEquals(1, $this->fetchDisplayableCards($account)[0]->occurrence);
+        // Current message hasn't been addressed (it's still displayed) so a new occurrence shouldn't be created,
+        // but we should still have 1 displayable message
+        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
+        $this->assertEquals(1, $this->findDisplayedMessages($account)[0]->occurrence);
 
         $verification_code->verification_status = VerificationCodeStatus::VERIFIED;
 
         $verification_code->store();
 
-        // Saving a verified ID should address the card, resulting in zero displayable
-        $this->assertEquals(0, count($this->fetchDisplayableCards($account)));
+        // Saving a verified ID should address the message, resulting in zero displayable
+        $this->assertEquals(0, count($this->findDisplayedMessages($account)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
-        // Account saved another failed code. Should have 1 displayable card, with a new occurrence
-        $this->assertEquals(1, count($this->fetchDisplayableCards($account)));
-        $this->assertEquals(2, $this->fetchDisplayableCards($account)[0]->occurrence);
+        // Account saved another failed code. Should have 1 displayable message, with a new occurrence
+        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
+        $this->assertEquals(2, $this->findDisplayedMessages($account)[0]->occurrence);
     }
 
-    private function fetchDisplayableCards($account): array
+    private function findDisplayedMessages($account): array
     {
-        $advisory_card_finder = new Model\AdvisoryCardFinder();
-        return $advisory_card_finder->findDisplayableForAccount($account);
+        return Message::findDisplayableForAccount($account);
     }
 }
