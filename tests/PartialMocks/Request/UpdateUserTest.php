@@ -8,10 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateUserTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function sends_request_and_parses_result()
+    public function test_sends_request_and_parses_result()
     {
         $method = 'PUT';
         $partial_uri = '/user/';

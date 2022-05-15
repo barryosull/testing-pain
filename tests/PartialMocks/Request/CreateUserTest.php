@@ -8,10 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function sends_request_and_parses_result()
+    public function test_sends_request_and_parses_result()
     {
         $method = 'POST';
         $partial_uri = '/user/';
