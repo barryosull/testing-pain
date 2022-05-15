@@ -2,12 +2,19 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class Message
+abstract class Message extends ActiveRecordBaseModel
 {
+    /** @var int */
+    protected $message_id;
+
+
+    /** @var int */
+    public $occurrence = 0;
+
     /**
      * @return Message[]
      */
-    public static function findDisplayableForAccount(Account $account): array {
+    public static function findActive(Account $account): array {
         return [];
     }
 }

@@ -18,13 +18,14 @@ class VerificationCode extends ActiveRecordBaseModel
 
         $account = Account::find($this->account_id);
 
-        $verification_failure_card = new VerificationFailed();
+        $verification_failure_message = new VerificationFailed();
 
         if ($this->verification_status === VerificationCodeStatus::FAILED) {
-            $verification_failure_card->createForAccount($account);
+            $verification_failure_message->create($account);
         } else {
-            $verification_failure_card->markAsAddressed($account);
+            $verification_failure_message->clear($account);
         }
+        $verification_failure_message->store();
     }
 
     public static function find(int $account_id): ?VerificationCode

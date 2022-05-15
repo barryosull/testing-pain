@@ -82,41 +82,36 @@ class VerificationCodeTest extends TestCase
         $account = Account::find(self::ACCOUNT_ID);
         $verification_code = VerificationCode::find(self::ACCOUNT_ID);
 
-        $this->assertEquals(0, count($this->findDisplayedMessages($account)));
+        $this->assertEquals(0, count(Message::findActive($account)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
-        // We just saved a failed ID, so should have 1 message with 1 occurrence
-        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
-        $this->assertEquals(1, $this->findDisplayedMessages($account)[0]->occurrence);
+        // We just saved a failed verification, so should have 1 message with 1 occurrence
+        $this->assertEquals(1, count(Message::findActive($account)));
+        $this->assertEquals(1, Message::findActive($account)[0]->occurrence);
 
         $verification_code->store();
 
-        // Current message hasn't been addressed (it's still displayed) so a new occurrence shouldn't be created,
-        // but we should still have 1 displayable message
-        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
-        $this->assertEquals(1, $this->findDisplayedMessages($account)[0]->occurrence);
+        // Current message hasn't been cleared (it's still active) so a new occurrence shouldn't be created,
+        // but we should still have 1 active message
+        $this->assertEquals(1, count(Message::findActive($account)));
+        $this->assertEquals(1, Message::findActive($account)[0]->occurrence);
 
         $verification_code->verification_status = VerificationCodeStatus::VERIFIED;
 
         $verification_code->store();
 
-        // Saving a verified ID should address the message, resulting in zero displayable
-        $this->assertEquals(0, count($this->findDisplayedMessages($account)));
+        // Saving a verified ID should clear the message, resulting in zero active
+        $this->assertEquals(0, count(Message::findActive($account)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
-        // Account saved another failed code. Should have 1 displayable message, with a new occurrence
-        $this->assertEquals(1, count($this->findDisplayedMessages($account)));
-        $this->assertEquals(2, $this->findDisplayedMessages($account)[0]->occurrence);
-    }
-
-    private function findDisplayedMessages($account): array
-    {
-        return Message::findDisplayableForAccount($account);
+        // Account saved another failed code. Should have 1 active message, with a new occurrence
+        $this->assertEquals(1, count(Message::findActive($account)));
+        $this->assertEquals(2, Message::findActive($account)[0]->occurrence);
     }
 }

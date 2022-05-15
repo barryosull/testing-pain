@@ -3,15 +3,18 @@
 namespace Barryosull\TestingPain\DBSeeding\Message;
 
 use Barryosull\TestingPain\DBSeeding\Model\Account;
+use Barryosull\TestingPain\DBSeeding\Model\Message;
 
-class VerificationFailed
+class VerificationFailed extends Message
 {
-    public function createForAccount(Account $account)
+    protected $message_id = 1;
+
+    public function create(Account $account)
     {
 
     }
 
-    public function markAsAddressed(Account $account)
+    public function clear(Account $account)
     {
 
     }

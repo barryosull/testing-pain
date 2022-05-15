@@ -7,6 +7,7 @@ class ActiveRecordBaseModel
     public function store()
     {
         // details omitted ...
+        $this->recordStored();
     }
 
     protected function recordStored($dirtyData = null)
