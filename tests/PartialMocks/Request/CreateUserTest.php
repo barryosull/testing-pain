@@ -8,46 +8,43 @@ use PHPUnit\Framework\TestCase;
 
 class CreateUserTest extends TestCase
 {
-    private $name = 'Test User';
-    private $email = 'test@email.com';
-    private $user_id = 1;
+    private const NAME = 'Test User';
+    private const EMAIL = 'test@email.com';
+    private const USER_ID = 1;
+
+    /** @var CreateUser */
+    private $request;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->request = $this->makeRequest();
+    }
 
     public function test_makes_request_for_service()
     {
         $expected_request = $this->makeExpectedServiceRequest();
 
-        $service_request = $this->whenServiceRequestIsMade();
+        $service_request = $this->request->makeServiceRequest();
 
         $this->assertEquals($expected_request, $service_request);
     }
 
     public function test_adapts_response_from_service()
     {
-        $response = $this->whenResponseIsAdapted();
+        $response = $this->request->adaptResponse($this->makeServiceResponse());
 
         $expected_response = $this->makeExpectedResponse();
 
         $this->assertEquals($expected_response, $response);
     }
 
-    private function whenServiceRequestIsMade(): array
-    {
-        $request = $this->makeRequest();
-        return $request->makeServiceRequest();
-    }
-
-    private function whenResponseIsAdapted(): array
-    {
-        $request = $this->makeRequest();
-        $service_response = $this->makeServiceResponse();
-        return $request->adaptResponse($service_response);
-    }
-
     private function makeRequest(): CreateUser
     {
         $dob = new DateTime('1994-10-10');
         $tshirt_size = 's';
-        return new CreateUser($this->name, $dob, $this->email, $tshirt_size);
+        return new CreateUser(self::NAME, $dob, self::EMAIL, $tshirt_size);
     }
 
     private function makeExpectedServiceRequest(): array
@@ -55,9 +52,9 @@ class CreateUserTest extends TestCase
         $expected_dob = '10/10/1994';
         $expected_tshirt_size = 1;
         return [
-            'name' => $this->name,
+            'name' => self::NAME,
             'dob' => $expected_dob,
-            'email' => $this->email,
+            'email' => self::EMAIL,
             'tshirt_size' => $expected_tshirt_size,
         ];
     }
@@ -67,13 +64,13 @@ class CreateUserTest extends TestCase
         return [
             'status' => 200,
             'data' => [
-                'entity_id' => $this->user_id,
+                'entity_id' => self::USER_ID,
             ]
         ];
     }
 
     private function makeExpectedResponse(): array
     {
-        return ['user_id' => $this->user_id];
+        return ['user_id' => self::USER_ID];
     }
 }
