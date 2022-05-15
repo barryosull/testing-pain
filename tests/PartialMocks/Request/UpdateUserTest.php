@@ -8,48 +8,114 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateUserTest extends TestCase
 {
-    public function test_sends_request_and_parses_result()
+    const USER_ID = 1;
+    const EMAIL = 'test@email.com';
+    const NAME = 'Test User2';
+
+    /** @var UpdateUser */
+    private $request;
+
+    protected function setUp(): void
     {
-        $method = 'PUT';
-        $partial_uri = '/user/';
-        $update_user_request = $this->createPartialMock(UpdateUser::class, ['getCredentials', 'makeCall']);
+        parent::setUp();
 
-        $credentials = ['username' => 'test', 'password' => 'password'];
+        $this->request = $this->makeRequestWithMockedApi();
+    }
 
-        $update_user_request->method('getCredentials')
-            ->willReturn($credentials);
+    public function test_sends_request()
+    {
+        $this->givenRequestIsPrepared();
 
-        $api_data = [
-            'user_id' => 1,
-            'name' => 'Test User2',
+        $this->expectFormattedApiRequestIsSent();
+
+        $this->request->send();
+    }
+
+    public function test_parses_result()
+    {
+        $this->givenRequestIsPrepared();
+        $this->givenApiCallReturnsResponse();
+
+        $result = $this->request->send();
+
+        $expected_result = $this->makeExpectedResponse();
+        $this->assertEquals($expected_result, $result);
+    }
+
+    private function makeRequestWithMockedApi(): UpdateUser
+    {
+        return $this->createPartialMock(UpdateUser::class, ['getCredentials', 'makeCall']);
+    }
+
+    private function makeExpectedApiRequest(): array
+    {
+        return [
+            'user_id' => self::USER_ID,
+            'name' => self::NAME,
             'dob' => '10/10/1993',
-            'email' => 'test@email2.com',
+            'email' => self::EMAIL,
             'tshirt_size' => 2
         ];
+    }
 
-        $response = [
+    private function makeExpectedApiResponse(): array
+    {
+        return [
             'status' => 200,
             'data' => [
-                'entity_id' => 1,
+                'entity_id' => self::USER_ID,
             ]
         ];
+    }
 
-        $update_user_request->method('makeCall')
-            ->with($method, $partial_uri, $api_data, $credentials)
+    private function makeExpectedResponse(): array
+    {
+        return ['user_id' => self::USER_ID];
+    }
+
+    private function givenApiCallReturnsResponse(): void
+    {
+        $response = $this->makeExpectedApiResponse();
+
+        $this->request->method('makeCall')
             ->willReturn($response);
+    }
 
+    private function givenValidCredentials(): array
+    {
+        $credentials = ['username' => 'test', 'password' => 'password'];
+
+        $this->request->method('getCredentials')
+            ->willReturn($credentials);
+
+        return $credentials;
+    }
+
+    private function givenRequestIsPrepared(): void
+    {
         $dob = new DateTime('1993-10-10');
 
-        $update_user_request->set('user_id', 1);
-        $update_user_request->set('name', 'Test User2');
-        $update_user_request->set('dob', $dob);
-        $update_user_request->set('email', 'test@email2.com');
-        $update_user_request->set('tshirt_size', 'm');
+        $this->request->set('user_id', self::USER_ID);
+        $this->request->set('name', self::NAME);
+        $this->request->set('dob', $dob);
+        $this->request->set('email', self::NAME);
+        $this->request->set('tshirt_size', 'm');
+    }
 
-        $result = $update_user_request->send();
+    private function expectFormattedApiRequestIsSent()
+    {
+        $credentials = $this->givenValidCredentials();
 
-        $expected_result = ['user_id' => 1];
+        $method = 'PUT';
+        $partial_uri = '/user/';
 
-        $this->assertEquals($expected_result, $result);
+        $api_data = $this->makeExpectedApiRequest();
+
+        $response = $this->makeExpectedApiResponse();
+
+        $this->request->expects($this->once())
+            ->method('makeCall')
+            ->with($method, $partial_uri, $api_data, $credentials)
+            ->willReturn($response);
     }
 }
