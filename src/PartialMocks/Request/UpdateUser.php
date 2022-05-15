@@ -12,8 +12,8 @@ class UpdateUser extends AbstractRequest
 
     protected function formatRequest(): void
     {
-        $this->data['tshirt_size'] = $this->formatTshirtSize($this->data['tshirt_size']);
-        $this->data['dob'] = $this->data['dob']->format('d/m/Y');
+        $this->request_data['tshirt_size'] = $this->formatTshirtSize($this->request_data['tshirt_size']);
+        $this->request_data['dob'] = $this->request_data['dob']->format('d/m/Y');
     }
 
     protected function formatTshirtSize(string $size): int

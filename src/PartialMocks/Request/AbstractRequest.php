@@ -10,7 +10,7 @@ abstract class AbstractRequest
     private $base_url;
 
     /** @var array  */
-    protected $data;
+    protected $request_data;
 
     /** @var string */
     protected $method;
@@ -18,7 +18,7 @@ abstract class AbstractRequest
     public function __construct()
     {
         $this->base_url = $this->getUrl();
-        $this->data = [];
+        $this->request_data = [];
     }
 
     protected function getUrl(): string
@@ -28,14 +28,14 @@ abstract class AbstractRequest
 
     public function send(): array
     {
-        $request = $this->formatRequest();
-        $response = $this->makeCall($this->method, $this->partial_uri, $request, $this->getCredentials());
+        $this->formatRequest();
+        $response = $this->makeCall($this->method, $this->partial_uri, $this->request_data, $this->getCredentials());
         return $this->formatResponse($response);
     }
 
     public function set(string $key, $value)
     {
-        $this->data[$key] = $value;
+        $this->request_data[$key] = $value;
     }
 
     protected function getCredentials()
