@@ -6,9 +6,13 @@ use Barryosull\TestingPain\PartialMocks\Config;
 
 abstract class AbstractRequest
 {
+    /** @var string */
     private $base_url;
-    private $data;
 
+    /** @var array  */
+    protected $data;
+
+    /** @var string */
     protected $method;
 
     public function __construct()
@@ -24,18 +28,13 @@ abstract class AbstractRequest
 
     public function send(): array
     {
-        $response = $this->makeCall($this->method, $this->partial_uri, $this->data, $this->getCredentials());
+        $request = $this->formatRequest();
+        $response = $this->makeCall($this->method, $this->partial_uri, $request, $this->getCredentials());
         return $this->formatResponse($response);
     }
 
     public function set(string $key, $value)
     {
-        $keyCamelCase = $str = str_replace('_', '', ucwords($key, '_'));
-
-        $format_method = 'format' . $keyCamelCase;
-        if (method_exists($this, $format_method)) {
-            $value = $this->$format_method($value);
-        }
         $this->data[$key] = $value;
     }
 
@@ -47,16 +46,16 @@ abstract class AbstractRequest
         ];
     }
 
-    protected function makeCall(string $method, string $partial_uri, array $data, array $credentials): array
+    protected function makeCall(string $method, string $partial_uri, array $request, array $credentials): array
     {
         $connection = curl_init($this->base_url . $partial_uri);
         curl_setopt($connection, CURLOPT_USERPWD, $credentials['username'] . ":" . $credentials['password']);
         if ($method === 'POST') {
-            curl_setopt($connection, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($connection, CURLOPT_POSTFIELDS, $request);
         }
         if ($method === 'PUT') {
             curl_setopt($connection, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($connection, CURLOPT_POSTFIELDS,http_build_query($data));
+            curl_setopt($connection, CURLOPT_POSTFIELDS,http_build_query($request));
         }
         curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
         $api_response = curl_exec($connection);
@@ -64,6 +63,8 @@ abstract class AbstractRequest
 
         return json_decode($api_response, true);
     }
+
+    abstract protected function formatRequest(): void;
 
     abstract protected function formatResponse(array $response): array;
 }

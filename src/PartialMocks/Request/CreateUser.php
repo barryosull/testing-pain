@@ -2,16 +2,18 @@
 
 namespace Barryosull\TestingPain\PartialMocks\Request;
 
-use DateTime;
-
 class CreateUser extends AbstractRequest
 {
+    /** @var string  */
     protected $method = 'POST';
+
+    /** @var string */
     protected $partial_uri = '/user/';
 
-    protected function formatDob(DateTime $dob): string
+    protected function formatRequest(): void
     {
-        return  $dob->format('d/m/Y');
+        $this->data['tshirt_size'] = $this->formatTshirtSize($this->data['tshirt_size']);
+        $this->data['dob'] = $this->data['dob']->format('d/m/Y');
     }
 
     protected function formatTshirtSize(string $size): int
