@@ -4,6 +4,9 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
 
 class Account
 {
+    /** @var int */
+    public $id;
+
     public static function find(int $account_id): ?Account
     {
         // details omitted ...

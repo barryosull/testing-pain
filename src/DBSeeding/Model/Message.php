@@ -2,19 +2,43 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-abstract class Message extends ActiveRecordBaseModel
+class Message extends ActiveRecordBaseModel
 {
-    /** @var int */
-    protected $message_id;
-
+    CONST VERIFICATION_FAILED_TYPE_ID = 1;
 
     /** @var int */
-    public $occurrence = 0;
+    protected $message_type_id;
+
+    public function __construct(int $account_id, int $message_type_id)
+    {
+
+    }
+
+    public function display(): void
+    {
+
+    }
+
+    public function clear(): void
+    {
+
+    }
 
     /**
+     * @param int $account_id
+     * @param int $type_id
      * @return Message[]
      */
-    public static function findActive(Account $account): array {
+    public static function findActive(int $account_id, int $type_id): array {
+        return [];
+    }
+
+    /**
+     * @param int $account_id
+     * @param int $type_id
+     * @return Message[]
+     */
+    public static function findByType(int $account_id, int $type_id): array {
         return [];
     }
 }

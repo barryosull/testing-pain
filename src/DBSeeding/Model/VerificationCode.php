@@ -18,12 +18,17 @@ class VerificationCode extends ActiveRecordBaseModel
 
         $account = Account::find($this->account_id);
 
-        $verification_failure_message = new VerificationFailed();
+        $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
+
+        $verification_failure_message = Message::findByType($account->id, $message_type_id);
+        if ($verification_failure_message === null) {
+            $verification_failure_message = new Message($account->id, $message_type_id);
+        }
 
         if ($this->verification_status === VerificationCodeStatus::FAILED) {
-            $verification_failure_message->create($account);
+            $verification_failure_message->display();
         } else {
-            $verification_failure_message->clear($account);
+            $verification_failure_message->clear();
         }
         $verification_failure_message->store();
     }
