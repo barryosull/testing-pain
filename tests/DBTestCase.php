@@ -13,12 +13,24 @@ abstract class DBTestCase extends TestCase
     {
         parent::setUp();
 
+        $this->pretendDBIsCreated();
+
         $seed_data = $this->getDBSeedData();
         foreach ($seed_data as $table => $rows) {
             foreach ($rows as $row) {
                 $this->seedTableRow($table, $row);
             }
         }
+    }
+
+    private function pretendDBIsCreated()
+    {
+        fwrite(STDERR, "Creating database\n");
+        for ($i = 0; $i < 5; $i++) {
+            usleep(500000);
+            fwrite(STDERR, ". ");
+        }
+        fwrite(STDERR, "\nDatabase created\n\nRunning tests:\n");
     }
 
     abstract protected function getDBSeedData(): array;
