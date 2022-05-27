@@ -2,10 +2,8 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-/**
- * @property int $account_id
- */
 class Account
 {
-    public $account_id;
+    /** @var int */
+    public $id;
 }

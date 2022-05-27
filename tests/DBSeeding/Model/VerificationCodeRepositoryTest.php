@@ -2,8 +2,8 @@
 
 namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
-use Barryosull\TestingPain\DBSeeding\Message\Message;
-use Barryosull\TestingPain\DBSeeding\Message\MessageFactory;
+use Barryosull\TestingPain\DBSeeding\Model\Message;
+use Barryosull\TestingPain\DBSeeding\Model\MessageRepository;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationStatus;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeRepository;
@@ -18,8 +18,8 @@ class VerificationCodeRepositoryTest extends TestCase
     /** @var AccountRepository */
     private $account_repository;
 
-    /** @var MessageFactory */
-    private $message_factory;
+    /** @var MessageRepository */
+    private $message_repository;
 
     /** @var VerificationCodeRepository */
     private $repository;
@@ -29,9 +29,9 @@ class VerificationCodeRepositoryTest extends TestCase
         parent::setUp();
 
         $this->account_repository = $this->createMock(AccountRepository::class);
-        $this->message_factory = $this->createMock(MessageFactory::class);
+        $this->message_repository = $this->createMock(MessageRepository::class);
 
-        $this->repository = new VerificationCodeRepository($this->account_repository, $this->message_factory);
+        $this->repository = new VerificationCodeRepository($this->account_repository, $this->message_repository);
     }
 
 
@@ -51,6 +51,7 @@ class VerificationCodeRepositoryTest extends TestCase
     public function test_creates_failure_message_on_failed_verification()
     {
         $account = $this->givenAccountExists();
+        $this->givenMessageExists($account);
         $id_verification = $this->makeVerificationWithStatus(VerificationStatus::FAILED);
         $this->expectMessageToBeCreatedForAccount($account);
 
@@ -60,6 +61,7 @@ class VerificationCodeRepositoryTest extends TestCase
     public function test_clears_failure_message_on_verified_verification()
     {
         $account = $this->givenAccountExists();
+        $this->givenMessageExists($account);
         $id_verification = $this->makeVerificationWithStatus(VerificationStatus::VERIFIED);
         $this->expectMessageToBeClearedForAccount($account);
 
@@ -87,10 +89,17 @@ class VerificationCodeRepositoryTest extends TestCase
     private function givenAccountExists(): Account
     {
         $account = $this->createMock(Account::class);
-        $account->account_id = self::ACCOUNT_ID;
+        $account->id = self::ACCOUNT_ID;
         $this->account_repository->method('find')
             ->willReturn($account);
         return $account;
+    }
+
+    private function givenMessageExists(Account $account)
+    {
+        $message = new Message($account->id, Message::VERIFICATION_FAILED_TYPE_ID);
+        $this->message_repository->method('findByType')
+            ->willReturn($message);
     }
 
 
@@ -106,25 +115,13 @@ class VerificationCodeRepositoryTest extends TestCase
 
     private function expectMessageToBeCreatedForAccount(Account $account)
     {
-        $message = $this->createMock(Message::class);
-        $this->message_factory->method('makeVerificationFailedMessage')
-            ->with($account->account_id)
-            ->willReturn($message);
-
-        $message->expects($this->once())
-            ->method('createForAccount')
-            ->with($account);
+        $this->message_repository->expects($this->once())
+            ->method('store');
     }
 
     private function expectMessageToBeClearedForAccount(Account $account)
     {
-        $message = $this->createMock(Message::class);
-        $this->message_factory->method('makeVerificationFailedMessage')
-            ->with($account->account_id)
-            ->willReturn($message);
-
-        $message->expects($this->once())
-            ->method('clear')
-            ->with($account);
+        $this->message_repository->expects($this->once())
+            ->method('store');
     }
 }
