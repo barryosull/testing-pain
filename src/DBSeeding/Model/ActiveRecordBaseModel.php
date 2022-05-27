@@ -6,13 +6,18 @@ abstract class ActiveRecordBaseModel
 {
     protected static $model_store = [];
 
+    public static function clearStore(): void
+    {
+        self::$model_store = [];
+    }
+
     public function store()
     {
         $this->storeInDB();
         $this->recordStored();
     }
 
-    public function storeInDB()
+    private function storeInDB()
     {
         self::$model_store[static::class][$this->getPrimaryId()] = $this;
     }
