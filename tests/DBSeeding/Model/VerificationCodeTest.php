@@ -2,14 +2,13 @@
 
 namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
-use Barryosull\TestingPain\DBSeeding\Model;
 use Barryosull\TestingPain\DBSeeding\Model\Account;
 use Barryosull\TestingPain\DBSeeding\Model\Message;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeStatus;
-use PHPUnit\Framework\TestCase;
+use Barryosull\TestingPainTests\DBTestCase;
 
-class VerificationCodeTest extends TestCase
+class VerificationCodeTest extends DBTestCase
 {
     CONST ACCOUNT_ID = 1;
     CONST CODE = 1111;
@@ -17,7 +16,7 @@ class VerificationCodeTest extends TestCase
     CONST VERIFICATION_LAST_CHECKED_AT = 1919191919;
     CONST UPDATE_DATE = 1609000000;
 
-    public function getDBSeedData(): array
+    protected function getDBSeedData(): array
     {
         return [
             'accounts' => [
@@ -28,9 +27,9 @@ class VerificationCodeTest extends TestCase
                     'status' => 'active',
                 ],
             ],
-            'verifications' => [
+            'verification_codes' => [
                 [
-                    'verification_id' => 1,
+                    'verification_code_id' => 1,
                     'account_id' => self::ACCOUNT_ID,
                     'code' => self::CODE,
                     'verification_status' => VerificationCodeStatus::VERIFIED,
@@ -38,7 +37,7 @@ class VerificationCodeTest extends TestCase
                     'update_date' => self::UPDATE_DATE,
                 ],
                 [
-                    'verification_id' => 2,
+                    'verification_code_id' => 2,
                     'account_id' => self::ACCOUNT_ID,
                     'code' => self::CODE_2,
                     'verification_status' => VerificationCodeStatus::VERIFIED,
@@ -83,32 +82,32 @@ class VerificationCodeTest extends TestCase
         $account = Account::find(self::ACCOUNT_ID);
         $verification_code = VerificationCode::find(self::ACCOUNT_ID);
 
-        $this->assertEquals(0, count(Message::findActive($account->id, $message_type_id)));
+        $this->assertEquals(0, count(Message::findActive($account->account_id, $message_type_id)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
         // We just saved a failed verification, so should have 1 message
-        $this->assertEquals(1, count(Message::findActive($account->id, $message_type_id)));
+        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
 
         $verification_code->store();
 
         // Current message hasn't been cleared (it's still active) so we should still have 1 active message
-        $this->assertEquals(1, count(Message::findActive($account->id, $message_type_id)));
+        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
 
         $verification_code->verification_status = VerificationCodeStatus::VERIFIED;
 
         $verification_code->store();
 
         // Saving a verified ID should clear the message, resulting in zero active
-        $this->assertEquals(0, count(Message::findActive($account->id, $message_type_id)));
+        $this->assertEquals(0, count(Message::findActive($account->account_id, $message_type_id)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 
         $verification_code->store();
 
         // Account saved another failed code. Should have 1 active message
-        $this->assertEquals(1, count(Message::findActive($account->id, $message_type_id)));
+        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
     }
 }

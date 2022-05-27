@@ -2,16 +2,30 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-class ActiveRecordBaseModel
+abstract class ActiveRecordBaseModel
 {
+    protected static $model_store = [];
+
     public function store()
     {
-        // details omitted ...
+        $this->storeInDB();
         $this->recordStored();
+    }
+
+    public function storeInDB()
+    {
+        self::$model_store[static::class][$this->getPrimaryId()] = $this;
     }
 
     protected function recordStored($dirtyData = null)
     {
-        // details omitted ...
+
+    }
+
+    abstract public function getPrimaryId();
+
+    public static function findByPrimary(int $id): ?static
+    {
+        return self::$model_store[static::class][$id] ?? null;
     }
 }
