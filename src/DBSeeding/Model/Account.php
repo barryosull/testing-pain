@@ -5,7 +5,10 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
 class Account extends ActiveRecordBaseModel
 {
     public function __construct(
-        public int $account_id
+        public int $account_id,
+        public int $user_id,
+        public string $name,
+        public string $status
     ){}
 
     public static function find(int $account_id): ?Account

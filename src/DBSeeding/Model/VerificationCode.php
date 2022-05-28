@@ -10,6 +10,7 @@ class VerificationCode extends ActiveRecordBaseModel
         public string $code,
         public string $verification_status = VerificationCodeStatus::UNCHECKED,
         public ?int $verification_last_checked_at = null,
+        public ?int $update_date = null
     ){}
 
     protected function recordStored($dirtyData = null): void
