@@ -26,25 +26,14 @@ class VerificationCodeTest extends DBTestCase
         $this->givenVerificationCode($verification_code);
         $this->givenMessageType($message_type);
 
-        
         $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
-        // We just saved a failed verification, so should have 1 message
-        $this->assertEquals(1, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
-
-
-        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
-        // Current message hasn't been cleared (it's still active) so we should still have 1 active message
-        $this->assertEquals(1, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
-
+        $this->verifyMessageIsDisplayed($message_type_id);
 
         $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::VERIFIED);
-        // Saving a verified ID should clear the message, resulting in zero active
-        $this->assertEquals(0, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
-
-
+        $this->verifyMessageIsCleared($message_type_id);
+        
         $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
-        // Account saved another failed code. Should have 1 active message
-        $this->assertEquals(1, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
+        $this->verifyMessageIsDisplayed($message_type_id);
     }
 
     private function makeVerificatonCode(): VerificationCode {
@@ -102,5 +91,21 @@ class VerificationCodeTest extends DBTestCase
         $verification_code = VerificationCode::find(self::ACCOUNT_ID);
         $verification_code->verification_status = $status;
         $verification_code->store();
+    }
+
+    /**
+     * @param int $message_type_id
+     */
+    protected function verifyMessageIsDisplayed(int $message_type_id): void
+    {
+        $this->assertEquals(1, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
+    }
+
+    /**
+     * @param int $message_type_id
+     */
+    protected function verifyMessageIsCleared(int $message_type_id): void
+    {
+        $this->assertEquals(0, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
     }
 }
