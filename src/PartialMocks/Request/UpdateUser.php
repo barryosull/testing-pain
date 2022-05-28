@@ -6,8 +6,8 @@ use DateTime;
 
 class UpdateUser extends AbstractRequest
 {
-    protected $method = 'PUT';
-    protected $partial_uri = '/user/';
+    protected string $method = 'PUT';
+    protected string $partial_uri = '/user/';
 
     protected function formatDob(DateTime $dob): string
     {

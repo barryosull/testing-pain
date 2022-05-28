@@ -6,8 +6,8 @@ use DateTime;
 
 class CreateUser extends AbstractRequest
 {
-    protected $method = 'POST';
-    protected $partial_uri = '/user/';
+    protected string $method = 'POST';
+    protected string $partial_uri = '/user/';
 
     protected function formatDob(DateTime $dob): string
     {
