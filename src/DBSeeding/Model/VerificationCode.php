@@ -15,13 +15,11 @@ class VerificationCode extends ActiveRecordBaseModel
     protected function recordStored($dirtyData = null): void {
         parent::recordStored($dirtyData);
 
-        $account = Account::find($this->account_id);
-
         $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
 
-        $verification_failure_message = Message::findByType($account->account_id, $message_type_id);
+        $verification_failure_message = Message::findByType($this->account_id, $message_type_id);
         if ($verification_failure_message === null) {
-            $verification_failure_message = new Message($account->account_id, $message_type_id);
+            $verification_failure_message = new Message($this->account_id, $message_type_id);
         }
 
         if ($this->verification_status === VerificationCodeStatus::FAILED) {

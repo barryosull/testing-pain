@@ -2,7 +2,6 @@
 
 namespace Barryosull\TestingPainTests\DBSeeding\Model;
 
-use Barryosull\TestingPain\DBSeeding\Model\Account;
 use Barryosull\TestingPain\DBSeeding\Model\Message;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCode;
 use Barryosull\TestingPain\DBSeeding\Model\VerificationCodeStatus;
@@ -19,24 +18,6 @@ class VerificationCodeTest extends DBTestCase
     protected function getDBSeedData(): array
     {
         return [
-            'accounts' => [
-                [
-                    'account_id' => self::ACCOUNT_ID,
-                    'user_id' => 1,
-                    'name' => 'account 1',
-                    'status' => 'active',
-                ],
-            ],
-            'verification_codes' => [
-                [
-                    'verification_code_id' => 1,
-                    'account_id' => self::ACCOUNT_ID,
-                    'code' => self::CODE,
-                    'verification_status' => VerificationCodeStatus::UNCHECKED,
-                    'verification_last_checked_at' => self::VERIFICATION_LAST_CHECKED_AT,
-                    'update_date' => self::UPDATE_DATE,
-                ],
-            ],
             'message_types' => [
                 [
                     'message_type_id' =>  Message::VERIFICATION_FAILED_TYPE_ID,
@@ -70,34 +51,48 @@ class VerificationCodeTest extends DBTestCase
 
     public function test_messages_handle_on_store()
     {
+        $this->givenVerificationCode();
         $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
-        $account = Account::find(self::ACCOUNT_ID);
-        $verification_code = VerificationCode::find(self::ACCOUNT_ID);
 
-        $verification_code->verification_status = VerificationCodeStatus::FAILED;
-
-        $verification_code->store();
+        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
 
         // We just saved a failed verification, so should have 1 message
-        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
+        $account_id = self::ACCOUNT_ID;
+        $this->assertEquals(1, count(Message::findActive($account_id, $message_type_id)));
 
-        $verification_code->store();
+        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
 
         // Current message hasn't been cleared (it's still active) so we should still have 1 active message
-        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
+        $this->assertEquals(1, count(Message::findActive($account_id, $message_type_id)));
 
-        $verification_code->verification_status = VerificationCodeStatus::VERIFIED;
-
-        $verification_code->store();
+        $status = VerificationCodeStatus::VERIFIED;
+        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::VERIFIED);
 
         // Saving a verified ID should clear the message, resulting in zero active
-        $this->assertEquals(0, count(Message::findActive($account->account_id, $message_type_id)));
+        $this->assertEquals(0, count(Message::findActive($account_id, $message_type_id)));
 
-        $verification_code->verification_status = VerificationCodeStatus::FAILED;
-
-        $verification_code->store();
+        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
 
         // Account saved another failed code. Should have 1 active message
-        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
+        $this->assertEquals(1, count(Message::findActive($account_id, $message_type_id)));
+    }
+
+    private function givenVerificationCode()
+    {
+        $verification_code = new VerificationCode(
+            verification_code_id: 1,
+            account_id: self::ACCOUNT_ID,
+            code: self::CODE,
+            verification_status: VerificationCodeStatus::UNCHECKED,
+            verification_last_checked_at: self::VERIFICATION_LAST_CHECKED_AT,
+        );
+        $verification_code->store();
+    }
+
+    private function whenVerificationCodeStatusChanges(string $status)
+    {
+        $verification_code = VerificationCode::find(self::ACCOUNT_ID);
+        $verification_code->verification_status = $status;
+        $verification_code->store();
     }
 }
