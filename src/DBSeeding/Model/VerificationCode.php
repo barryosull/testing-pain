@@ -12,7 +12,8 @@ class VerificationCode extends ActiveRecordBaseModel
         public ?int $verification_last_checked_at = null,
     ){}
 
-    protected function recordStored($dirtyData = null): void {
+    protected function recordStored($dirtyData = null): void
+    {
         parent::recordStored($dirtyData);
 
         $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
