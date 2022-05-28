@@ -4,11 +4,8 @@ namespace Barryosull\TestingPain\PartialMocks\Request;
 
 class UpdateUser extends AbstractRequest
 {
-    /** @var string  */
-    protected $method = 'PUT';
-
-    /** @var string */
-    protected $partial_uri = '/user/';
+    protected string $method = 'PUT';
+    protected string $partial_uri = '/user/';
 
     protected function formatRequest(): void
     {

@@ -6,19 +6,13 @@ use Barryosull\TestingPain\PartialMocks\Config;
 
 abstract class AbstractRequest
 {
-    /** @var string */
-    private $base_url;
-
-    /** @var array  */
-    protected $request_data;
-
-    /** @var string */
-    protected $method;
+    private string $base_url;
+    protected array $request_data = [];
+    protected string $method;
 
     public function __construct()
     {
         $this->base_url = $this->getUrl();
-        $this->request_data = [];
     }
 
     protected function getUrl(): string

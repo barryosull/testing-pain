@@ -4,11 +4,8 @@ namespace Barryosull\TestingPain\PartialMocks\Request;
 
 class CreateUser extends AbstractRequest
 {
-    /** @var string  */
-    protected $method = 'POST';
-
-    /** @var string */
-    protected $partial_uri = '/user/';
+    protected string $method = 'POST';
+    protected string $partial_uri = '/user/';
 
     protected function formatRequest(): void
     {
