@@ -80,12 +80,7 @@ class VerificationCodeTest extends DBTestCase
 
         // We just saved a failed verification, so should have 1 message
         $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
-
-        $verification_code->store();
-
-        // Current message hasn't been cleared (it's still active) so we should still have 1 active message
-        $this->assertEquals(1, count(Message::findActive($account->account_id, $message_type_id)));
-
+        
         $verification_code->verification_status = VerificationCodeStatus::VERIFIED;
 
         $verification_code->store();
