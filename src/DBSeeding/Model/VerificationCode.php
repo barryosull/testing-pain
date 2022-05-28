@@ -2,22 +2,17 @@
 
 namespace Barryosull\TestingPain\DBSeeding\Model;
 
-/**
- * @property int $account_id
- * @property string $verification_status
- */
 class VerificationCode extends ActiveRecordBaseModel
 {
-    /** @var int */
-    public $verification_code_id;
+    public function __construct(
+        public int $verification_code_id,
+        public int $account_id,
+        public string $code,
+        public string $verification_status = VerificationCodeStatus::UNCHECKED,
+        public ?int $verification_last_checked_at = null,
+    ){}
 
-    /** @var int */
-    public $account_id;
-
-    /** @var string */
-    public $verification_status;
-
-    protected function recordStored($dirtyData = null) {
+    protected function recordStored($dirtyData = null): void {
         parent::recordStored($dirtyData);
 
         $account = Account::find($this->account_id);
@@ -42,7 +37,7 @@ class VerificationCode extends ActiveRecordBaseModel
         return self::findByPrimary($verification_code_id);
     }
 
-    public function getPrimaryId()
+    public function getPrimaryId(): int
     {
         return $this->verification_code_id;
     }

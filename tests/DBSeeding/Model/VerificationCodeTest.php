@@ -11,8 +11,8 @@ use Barryosull\TestingPainTests\DBTestCase;
 class VerificationCodeTest extends DBTestCase
 {
     CONST ACCOUNT_ID = 1;
-    CONST CODE = 1111;
-    CONST CODE_2 = 2222;
+    CONST CODE = '1111';
+    CONST CODE_2 = '2222';
     CONST VERIFICATION_LAST_CHECKED_AT = 1919191919;
     CONST UPDATE_DATE = 1609000000;
 
@@ -32,18 +32,10 @@ class VerificationCodeTest extends DBTestCase
                     'verification_code_id' => 1,
                     'account_id' => self::ACCOUNT_ID,
                     'code' => self::CODE,
-                    'verification_status' => VerificationCodeStatus::VERIFIED,
+                    'verification_status' => VerificationCodeStatus::UNCHECKED,
                     'verification_last_checked_at' => self::VERIFICATION_LAST_CHECKED_AT,
                     'update_date' => self::UPDATE_DATE,
                 ],
-                [
-                    'verification_code_id' => 2,
-                    'account_id' => self::ACCOUNT_ID,
-                    'code' => self::CODE_2,
-                    'verification_status' => VerificationCodeStatus::VERIFIED,
-                    'verification_last_checked_at' => self::VERIFICATION_LAST_CHECKED_AT,
-                    'update_date' => self::UPDATE_DATE + 1,
-                ]
             ],
             'message_types' => [
                 [
@@ -81,8 +73,6 @@ class VerificationCodeTest extends DBTestCase
         $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
         $account = Account::find(self::ACCOUNT_ID);
         $verification_code = VerificationCode::find(self::ACCOUNT_ID);
-
-        $this->assertEquals(0, count(Message::findActive($account->account_id, $message_type_id)));
 
         $verification_code->verification_status = VerificationCodeStatus::FAILED;
 

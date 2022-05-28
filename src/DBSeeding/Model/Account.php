@@ -4,15 +4,16 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
 
 class Account extends ActiveRecordBaseModel
 {
-    /** @var int */
-    public $account_id;
+    public function __construct(
+        public int $account_id
+    ){}
 
     public static function find(int $account_id): ?Account
     {
         return self::findByPrimary($account_id);
     }
 
-    public function getPrimaryId()
+    public function getPrimaryId(): int
     {
         return $this->account_id;
     }

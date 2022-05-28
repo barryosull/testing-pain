@@ -4,10 +4,11 @@ namespace Barryosull\TestingPain\DBSeeding\Model;
 
 class MessageType extends ActiveRecordBaseModel
 {
-    /** @var int */
-    public $message_type_id;
+    public function __construct(
+        public int $message_type_id
+    ){}
 
-    public function getPrimaryId()
+    public function getPrimaryId(): int
     {
         return $this->message_type_id;
     }

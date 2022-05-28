@@ -12,20 +12,33 @@ abstract class ActiveRecordBaseModel
         $this->recordStored();
     }
 
-    public function storeInDB()
+    public static function clearStore(): void
+    {
+        self::$model_store = [];
+    }
+
+    public function storeInDB(): void
     {
         self::$model_store[static::class][$this->getPrimaryId()] = $this;
     }
 
-    protected function recordStored($dirtyData = null)
+    protected function recordStored($dirtyData = null): void
     {
 
     }
 
-    abstract public function getPrimaryId();
+    abstract public function getPrimaryId(): int;
 
     public static function findByPrimary(int $id): ?static
     {
         return self::$model_store[static::class][$id] ?? null;
+    }
+
+    protected static $incrementing_id = 0;
+
+    protected function autoincrementId(): int
+    {
+        self::$incrementing_id++;
+        return self::$incrementing_id;
     }
 }
