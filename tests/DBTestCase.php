@@ -31,7 +31,6 @@ abstract class DBTestCase extends TestCase
 
     private function pretendDBIsCreated()
     {
-        return;
         if (self::$is_db_created) {
             return;
         }
@@ -44,21 +43,20 @@ abstract class DBTestCase extends TestCase
         self::$is_db_created = true;
     }
 
-    abstract protected function getDBSeedData(): array;
+    protected function getDBSeedData(): array
+    {
+        return [];
+    }
 
     private function seedTableRow(string $table, array $row): ActiveRecordBaseModel {
         if ($table === 'accounts') {
-            return new Account($row['account_id']);
+            return Account::makeFromDbRow($row);
         }
         if ($table === 'verification_codes') {
-            return new VerificationCode(
-                $row['account_id'],
-                $row['verification_code_id'],
-                $row['code']
-            );
+            return VerificationCode::makeFromDbRow($row);
         }
         if ($table === 'message_types') {
-            return new MessageType($row['message_type_id']);
+            return MessageType::makeFromDbRow($row);
         }
         throw new \Exception("Cannot create model for table '{$table}'");
     }
