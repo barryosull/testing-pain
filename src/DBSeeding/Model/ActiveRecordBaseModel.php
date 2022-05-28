@@ -41,4 +41,8 @@ abstract class ActiveRecordBaseModel
         self::$incrementing_id++;
         return self::$incrementing_id;
     }
+
+    public static function makeFromDbRow(array $db_row): static {
+        return new static(...$db_row);
+    }
 }
