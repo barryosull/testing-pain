@@ -6,18 +6,12 @@ use DateTime;
 
 class CreateUser implements Request
 {
-    private $name;
-    private $dob;
-    private $email;
-    private $tshirt_size;
-
-    public function __construct(string $name, DateTime $dob, string $email, string $tshirt_size)
-    {
-        $this->name = $name;
-        $this->dob = $dob;
-        $this->email = $email;
-        $this->tshirt_size = $tshirt_size;
-    }
+    public function __construct(
+        private string $name,
+        private DateTime $dob,
+        private string $email,
+        private string $tshirt_size
+    ) {}
 
     public function partialUri(): string
     {

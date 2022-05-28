@@ -6,20 +6,13 @@ use DateTime;
 
 class UpdateUser implements Request
 {
-    private $user_id;
-    private $name;
-    private $dob;
-    private $email;
-    private $tshirt_size;
-
-    public function __construct(int $user_id, string $name, DateTime $dob, string $email, string $tshirt_size)
-    {
-        $this->user_id = $user_id;
-        $this->name = $name;
-        $this->dob = $dob;
-        $this->email = $email;
-        $this->tshirt_size = $tshirt_size;
-    }
+    public function __construct(
+        private int $user_id,
+        private string $name,
+        private DateTime $dob,
+        private string $email,
+        private string $tshirt_size
+    ) {}
 
     public function partialUri(): string
     {
