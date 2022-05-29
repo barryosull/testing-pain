@@ -39,7 +39,8 @@ class IdentityControllerTest extends TestCase
 
         $this->onboarding_service = $this->makeOnboardingService();
         $this->api_client = $this->makeApiClient();
-        $this->create_identity_command = $this->makeCreateIdentityForCurrentYearCommand();
+        $this->create_identity_command = 
+            $this->makeCreateIdentityForCurrentYearCommand();
 
         $this->givenShopsExist();
         $this->givenUsersExist();
