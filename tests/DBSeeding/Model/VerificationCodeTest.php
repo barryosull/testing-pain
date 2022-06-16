@@ -20,23 +20,23 @@ class VerificationCodeTest extends DBTestCase
     {
         $message_type_id = Message::VERIFICATION_FAILED_TYPE_ID;
 
-        $verification_code = $this->makeVerificatonCode();
-        $message_type = $this->makeMessageType($message_type_id);
+        $verification_code = self::makeVerificationCode();
+        $message_type = self::makeMessageType($message_type_id);
 
         $this->givenVerificationCode($verification_code);
         $this->givenMessageType($message_type);
 
-        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
+        $this->whenVerificationCodeStatusChanges($verification_code, VerificationCodeStatus::FAILED);
         $this->verifyMessageIsDisplayed($message_type_id);
 
-        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::VERIFIED);
+        $this->whenVerificationCodeStatusChanges($verification_code, VerificationCodeStatus::VERIFIED);
         $this->verifyMessageIsCleared($message_type_id);
         
-        $this->whenVerificationCodeStatusChanges(VerificationCodeStatus::FAILED);
+        $this->whenVerificationCodeStatusChanges($verification_code, VerificationCodeStatus::FAILED);
         $this->verifyMessageIsDisplayed($message_type_id);
     }
 
-    private function makeVerificatonCode(): VerificationCode {
+    private static function makeVerificationCode(): VerificationCode {
         return VerificationCode::makeFromDbRow([
             'verification_code_id' => 1,
             'account_id' => self::ACCOUNT_ID,
@@ -46,12 +46,7 @@ class VerificationCodeTest extends DBTestCase
         ]);
     }
 
-    private function givenVerificationCode(VerificationCode $verification_code): void
-    {
-        $verification_code->store();
-    }
-
-    private function makeMessageType(int $message_type_id): MessageType
+    private static function makeMessageType(int $message_type_id): MessageType
     {
         return MessageType::makeFromDbRow([
             'message_type_id' => $message_type_id,
@@ -81,29 +76,27 @@ class VerificationCodeTest extends DBTestCase
         ]);
     }
 
+    private function givenVerificationCode(VerificationCode $verification_code): void
+    {
+        $verification_code->store();
+    }
+
     private function givenMessageType(MessageType $message_type)
     {
         $message_type->store();
     }
 
-    private function whenVerificationCodeStatusChanges(string $status)
+    private function whenVerificationCodeStatusChanges(VerificationCode $verification_code, string $status)
     {
-        $verification_code = VerificationCode::find(self::ACCOUNT_ID);
         $verification_code->verification_status = $status;
         $verification_code->store();
     }
 
-    /**
-     * @param int $message_type_id
-     */
     protected function verifyMessageIsDisplayed(int $message_type_id): void
     {
         $this->assertEquals(1, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
     }
 
-    /**
-     * @param int $message_type_id
-     */
     protected function verifyMessageIsCleared(int $message_type_id): void
     {
         $this->assertEquals(0, count(Message::findActive(self::ACCOUNT_ID, $message_type_id)));
