@@ -35,6 +35,13 @@ class UpdateUser implements Request
         ];
     }
 
+    public function adaptResponse(array $service_response): array
+    {
+        return [
+            'user_id' => $service_response['data']['entity_id']
+        ];
+    }
+
     private function formatDob(DateTime $dob): string
     {
         return  $dob->format('d/m/Y');
@@ -49,12 +56,5 @@ class UpdateUser implements Request
             return 2;
         }
         return 3;
-    }
-
-    public function adaptResponse(array $service_response): array
-    {
-        return [
-            'user_id' => $service_response['data']['entity_id']
-        ];
     }
 }
