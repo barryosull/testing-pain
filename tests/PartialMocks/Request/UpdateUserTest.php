@@ -12,19 +12,17 @@ class UpdateUserTest extends TestCase
     private const EMAIL = 'test@email.com';
     private const USER_ID = 1;
 
-    /** @var UpdateUser */
-    private $request;
+    private UpdateUser $request;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->request = $this->makeRequest();
+        $this->request = self::makeRequest();
     }
 
     public function test_makes_request_for_service()
     {
-        $expected_request = $this->makeExpectedServiceRequest();
+        $expected_request = self::makeExpectedServiceRequest();
 
         $service_request = $this->request->makeServiceRequest();
 
@@ -33,21 +31,21 @@ class UpdateUserTest extends TestCase
 
     public function test_adapts_response_from_service()
     {
-        $response = $this->request->adaptResponse($this->makeServiceResponse());
+        $response = $this->request->adaptResponse(self::makeServiceResponse());
 
-        $expected_response = $this->makeExpectedResponse();
+        $expected_response = self::makeExpectedResponse();
 
         $this->assertEquals($expected_response, $response);
     }
 
-    private function makeRequest(): UpdateUser
+    private static function makeRequest(): UpdateUser
     {
         $dob = new DateTime('1994-10-10');
         $tshirt_size = 's';
         return new UpdateUser(self::USER_ID, self::NAME, $dob, self::EMAIL, $tshirt_size);
     }
 
-    private function makeExpectedServiceRequest(): array
+    private static function makeExpectedServiceRequest(): array
     {
         $expected_dob = '10/10/1994';
         $expected_tshirt_size = 1;
@@ -60,7 +58,7 @@ class UpdateUserTest extends TestCase
         ];
     }
 
-    private function makeServiceResponse(): array
+    private static function makeServiceResponse(): array
     {
         return [
             'status' => 200,
@@ -70,7 +68,7 @@ class UpdateUserTest extends TestCase
         ];
     }
 
-    private function makeExpectedResponse(): array
+    private static function makeExpectedResponse(): array
     {
         return ['user_id' => self::USER_ID];
     }
