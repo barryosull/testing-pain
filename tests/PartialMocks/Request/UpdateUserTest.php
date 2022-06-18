@@ -12,8 +12,7 @@ class UpdateUserTest extends TestCase
     const EMAIL = 'test@email.com';
     const NAME = 'Test User2';
 
-    /** @var UpdateUser */
-    private $request;
+    private UpdateUser $request;
 
     protected function setUp(): void
     {
